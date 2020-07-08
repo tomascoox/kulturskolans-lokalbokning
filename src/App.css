@@ -1,38 +1,62 @@
-.App {
-  text-align: center;
+@import url('https://fonts.googleapis.com/css2?family=Muli:wght@500;800&display=swap');
+
+html {
+  box-sizing: border-box;
+  margin: 0;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+body {
   display: flex;
-  flex-direction: column;
+  background-color: rgb(255, 255, 255);
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  height: 100vh;
+  font-family: Muli;
+  font-weight: 500;
 }
 
-.App-link {
-  color: #61dafb;
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100vh;
+  background-color: #fff;
+  padding: 0 40px 0 10px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.chooser-container {
+  background-color: rgb(255, 255, 255);
+  width: 100%;
+  padding: 3vh 0 0 5vw;
+  text-align: center;
+  flex-grow: 1;
+}
+
+.lokal {
+  display: block;
+  font-family: Muli;
+  font-weight: 700;
+  font-size: 8vw;
+  line-height: 1;
+}
+
+.skola {
+  display: block;
+  font-family: Muli;
+  font-weight: 700;
+  font-size: 4vw;
+  line-height: 1;
+}
+
+.footer-container {
+  display: flex;
+  background-color: rgb(255, 255, 255);
+  width: 100%;
+  justify-content: center;
+  flex-grow: 1;
+  margin: 2vh 0 2vh 3vw;
+}
+
+.newBookingButton {
+  height: 13vh;
 }

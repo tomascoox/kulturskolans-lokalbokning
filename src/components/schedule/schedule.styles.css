@@ -1,0 +1,353 @@
+/* Hide scrollbar for Chrome, Safari and Opera */
+.schedule-container::-webkit-scrollbar {
+  display: none;
+}
+
+.schedule-container {
+  background-color: rgb(255, 255, 255);
+  margin: 2vh 0 2vh 0;
+  padding: 2vh 0 2vh 0;
+  width: 100%;
+  height: 50%;
+  flex-grow: 2;
+  overflow-y: scroll;
+  /* Hide scrollbar for IE and Edge */
+  -ms-overflow-style: none;
+  display: grid;
+  grid-gap: 0 0.15em;
+  grid-template-columns:
+    minmax(10%, 70%) minmax(10%, 100%) minmax(10%, 100%) minmax(10%, 100%)
+    minmax(10%, 100%) minmax(10%, 100%);
+  grid-template-rows:
+    [t0800] minmax(9px, 1fr)
+    [t0805] minmax(9px, 1fr)
+    [t0810] minmax(9px, 1fr)
+    [t0815] minmax(9px, 1fr)
+    [t0820] minmax(9px, 1fr)
+    [t0825] minmax(9px, 1fr)
+    [t0830] minmax(9px, 1fr)
+    [t0835] minmax(9px, 1fr)
+    [t0840] minmax(9px, 1fr)
+    [t0845] minmax(9px, 1fr)
+    [t0850] minmax(9px, 1fr)
+    [t0855] minmax(9px, 1fr)
+    [t0900] minmax(9px, 1fr)
+    [t0905] minmax(9px, 1fr)
+    [t0910] minmax(9px, 1fr)
+    [t0915] minmax(9px, 1fr)
+    [t0920] minmax(9px, 1fr)
+    [t0925] minmax(9px, 1fr)
+    [t0930] minmax(9px, 1fr)
+    [t0935] minmax(9px, 1fr)
+    [t0940] minmax(9px, 1fr)
+    [t0945] minmax(9px, 1fr)
+    [t0950] minmax(9px, 1fr)
+    [t0955] minmax(9px, 1fr)
+    [t1000] minmax(9px, 1fr)
+    [t1005] minmax(9px, 1fr)
+    [t1010] minmax(9px, 1fr)
+    [t1015] minmax(9px, 1fr)
+    [t1020] minmax(9px, 1fr)
+    [t1025] minmax(9px, 1fr)
+    [t1030] minmax(9px, 1fr)
+    [t1035] minmax(9px, 1fr)
+    [t1040] minmax(9px, 1fr)
+    [t1045] minmax(9px, 1fr)
+    [t1050] minmax(9px, 1fr)
+    [t1055] minmax(9px, 1fr)
+    [t1100] minmax(9px, 1fr)
+    [t1105] minmax(9px, 1fr)
+    [t1110] minmax(9px, 1fr)
+    [t1115] minmax(9px, 1fr)
+    [t1120] minmax(9px, 1fr)
+    [t1125] minmax(9px, 1fr)
+    [t1130] minmax(9px, 1fr)
+    [t1135] minmax(9px, 1fr)
+    [t1140] minmax(9px, 1fr)
+    [t1145] minmax(9px, 1fr)
+    [t1150] minmax(9px, 1fr)
+    [t1155] minmax(9px, 1fr)
+    [t1200] minmax(9px, 1fr)
+    [t1205] minmax(9px, 1fr)
+    [t1210] minmax(9px, 1fr)
+    [t1215] minmax(9px, 1fr)
+    [t1220] minmax(9px, 1fr)
+    [t1225] minmax(9px, 1fr)
+    [t1230] minmax(9px, 1fr)
+    [t1235] minmax(9px, 1fr)
+    [t1240] minmax(9px, 1fr)
+    [t1245] minmax(9px, 1fr)
+    [t1250] minmax(9px, 1fr)
+    [t1255] minmax(9px, 1fr)
+    [t1300] minmax(9px, 1fr)
+    [t1305] minmax(9px, 1fr)
+    [t1310] minmax(9px, 1fr)
+    [t1315] minmax(9px, 1fr)
+    [t1320] minmax(9px, 1fr)
+    [t1325] minmax(9px, 1fr)
+    [t1330] minmax(9px, 1fr)
+    [t1335] minmax(9px, 1fr)
+    [t1340] minmax(9px, 1fr)
+    [t1345] minmax(9px, 1fr)
+    [t1350] minmax(9px, 1fr)
+    [t1355] minmax(9px, 1fr)
+    [t1400] minmax(9px, 1fr)
+    [t1405] minmax(9px, 1fr)
+    [t1410] minmax(9px, 1fr)
+    [t1415] minmax(9px, 1fr)
+    [t1420] minmax(9px, 1fr)
+    [t1425] minmax(9px, 1fr)
+    [t1430] minmax(9px, 1fr)
+    [t1435] minmax(9px, 1fr)
+    [t1440] minmax(9px, 1fr)
+    [t1445] minmax(9px, 1fr)
+    [t1450] minmax(9px, 1fr)
+    [t1455] minmax(9px, 1fr)
+    [t1500] minmax(9px, 1fr)
+    [t1505] minmax(9px, 1fr)
+    [t1510] minmax(9px, 1fr)
+    [t1515] minmax(9px, 1fr)
+    [t1520] minmax(9px, 1fr)
+    [t1525] minmax(9px, 1fr)
+    [t1530] minmax(9px, 1fr)
+    [t1535] minmax(9px, 1fr)
+    [t1540] minmax(9px, 1fr)
+    [t1545] minmax(9px, 1fr)
+    [t1550] minmax(9px, 1fr)
+    [t1555] minmax(9px, 1fr)
+    [t1600] minmax(9px, 1fr)
+    [t1605] minmax(9px, 1fr)
+    [t1610] minmax(9px, 1fr)
+    [t1615] minmax(9px, 1fr)
+    [t1620] minmax(9px, 1fr)
+    [t1625] minmax(9px, 1fr)
+    [t1630] minmax(9px, 1fr)
+    [t1635] minmax(9px, 1fr)
+    [t1640] minmax(9px, 1fr)
+    [t1645] minmax(9px, 1fr)
+    [t1650] minmax(9px, 1fr)
+    [t1655] minmax(9px, 1fr)
+    [t1700] minmax(9px, 1fr)
+    [t1705] minmax(9px, 1fr)
+    [t1710] minmax(9px, 1fr)
+    [t1715] minmax(9px, 1fr)
+    [t1720] minmax(9px, 1fr)
+    [t1725] minmax(9px, 1fr)
+    [t1730] minmax(9px, 1fr)
+    [t1735] minmax(9px, 1fr)
+    [t1740] minmax(9px, 1fr)
+    [t1745] minmax(9px, 1fr)
+    [t1750] minmax(9px, 1fr)
+    [t1755] minmax(9px, 1fr)
+    [t1800] minmax(9px, 1fr)
+    [t1805] minmax(9px, 1fr)
+    [t1810] minmax(9px, 1fr)
+    [t1815] minmax(9px, 1fr)
+    [t1820] minmax(9px, 1fr)
+    [t1825] minmax(9px, 1fr)
+    [t1830] minmax(9px, 1fr)
+    [t1835] minmax(9px, 1fr)
+    [t1840] minmax(9px, 1fr)
+    [t1845] minmax(9px, 1fr)
+    [t1850] minmax(9px, 1fr)
+    [t1855] minmax(9px, 1fr)
+    [t1900] minmax(9px, 1fr)
+    [t1905] minmax(9px, 1fr)
+    [t1910] minmax(9px, 1fr)
+    [t1915] minmax(9px, 1fr)
+    [t1920] minmax(9px, 1fr)
+    [t1925] minmax(9px, 1fr)
+    [t1930] minmax(9px, 1fr)
+    [t1935] minmax(9px, 1fr)
+    [t1940] minmax(9px, 1fr)
+    [t1945] minmax(9px, 1fr)
+    [t1950] minmax(9px, 1fr)
+    [t1955] minmax(9px, 1fr)
+    [t2000] minmax(9px, 1fr);
+}
+
+.time-legend {
+  color: #aaaaaa;
+  font-family: Muli;
+  font-weight: 500;
+  font-size: 0.8rem;
+  line-height: 0.2;
+  text-align: center;
+  align-self: start;
+}
+
+.time-0800 {
+  grid-column: 1 / 1;
+  grid-row: t0800 / t0800;
+}
+
+.time-0900 {
+  grid-column: 1 / 1;
+  grid-row: t0900 / t0900;
+}
+
+.time-1000 {
+  grid-column: 1 / 1;
+  grid-row: t1000 / t1000;
+}
+
+.time-1100 {
+  grid-column: 1 / 1;
+  grid-row: t1100 / t1100;
+}
+
+.time-1200 {
+  grid-column: 1 / 1;
+  grid-row: t1200 / t1200;
+}
+
+.time-1300 {
+  grid-column: 1 / 1;
+  grid-row: t1300 / t1300;
+}
+
+.time-1400 {
+  grid-column: 1 / 1;
+  grid-row: t1400 / t1400;
+}
+
+.time-1500 {
+  grid-column: 1 / 1;
+  grid-row: t1500 / t1500;
+}
+
+.time-1600 {
+  grid-column: 1 / 1;
+  grid-row: t1600 / t1600;
+}
+
+.time-1700 {
+  grid-column: 1 / 1;
+  grid-row: t1700 / t1700;
+}
+
+.time-1800 {
+  grid-column: 1 / 1;
+  grid-row: t1800 / t01800;
+}
+
+.time-1900 {
+  grid-column: 1 / 1;
+  grid-row: t1900 / t01900;
+}
+
+.time-2000 {
+  grid-column: 1 / 1;
+  grid-row: t2000 / t02000;
+}
+
+.time-divider-0800 {
+  grid-column: 2 / 7;
+  grid-row: t0800 / t0800;
+  border-top: 1px dotted #555555;
+}
+
+.time-divider-0900 {
+  grid-column: 2 / 7;
+  grid-row: t0900 / t0900;
+  border-top: 1px dotted #555555;
+}
+.time-divider-1000 {
+  grid-column: 2 / 7;
+  grid-row: t1000 / t1000;
+  border-top: 1px dotted #555555;
+}
+.time-divider-1100 {
+  grid-column: 2 / 7;
+  grid-row: t1100 / t1100;
+  border-top: 1px dotted #555555;
+}
+.time-divider-1200 {
+  grid-column: 2 / 7;
+  grid-row: t1200 / t1200;
+  border-top: 1px dotted #555555;
+}
+.time-divider-1300 {
+  grid-column: 2 / 7;
+  grid-row: t1300 / t1300;
+  border-top: 1px dotted #555555;
+}
+.time-divider-1400 {
+  grid-column: 2 / 7;
+  grid-row: t1400 / t1400;
+  border-top: 1px dotted #555555;
+}
+.time-divider-1500 {
+  grid-column: 2 / 7;
+  grid-row: t1500 / t1500;
+  border-top: 1px dotted #555555;
+}
+.time-divider-1600 {
+  grid-column: 2 / 7;
+  grid-row: t1600 / t1600;
+  border-top: 1px dotted #555555;
+}
+.time-divider-1700 {
+  grid-column: 2 / 7;
+  grid-row: t1700 / t1700;
+  border-top: 1px dotted #555555;
+}
+.time-divider-1800 {
+  grid-column: 2 / 7;
+  grid-row: t1800 / t1800;
+  border-top: 1px dotted #555555;
+}
+.time-divider-1900 {
+  grid-column: 2 / 7;
+  grid-row: t1900 / t1900;
+  border-top: 1px dotted #555555;
+}
+.time-divider-2000 {
+  grid-column: 2 / 7;
+  grid-row: t2000 / t2000;
+  border-top: 1px dotted #555555;
+}
+
+.booked-item {
+  color: #fff;
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.booked-item-container {
+  height: 100%;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+}
+
+.booked-item-container .start-time {
+  font-size: 0.7em;
+  line-height: 1em;
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: start;
+  align-self: start;
+  min-width: 0;
+}
+
+.booked-item-container .item-info {
+  font-size: 0.8em;
+  line-height: 1em;
+  font-weight: 700;
+  grid-column: 2;
+  grid-row: 2;
+  justify-self: center;
+  align-self: center;
+}
+
+.booked-item-container .end-time {
+  font-size: 0.7em;
+  line-height: 1em;
+  grid-column: 3;
+  grid-row: 3;
+  justify-self: end;
+  align-self: end;
+  min-width: 0;
+}
