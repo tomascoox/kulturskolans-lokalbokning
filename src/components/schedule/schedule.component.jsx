@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react';
 
+import Booking from '../booking/booking.component';
 import BookingButton from '../booking-button/booking-button.component';
 
 import BOOKINGS_DATA from './schedule-data.js';
@@ -10,36 +11,22 @@ class Schedule extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      bookings: BOOKINGS_DATA,
+      room: 0,
+      schedule: BOOKINGS_DATA,
     };
   }
 
-  startTime = (start) => {
-    return (
-      (start.getHours() < 10 ? '0' : '') +
-      start.getHours() +
-      '' +
-      (start.getMinutes() < 10 ? '0' : '') +
-      start.getMinutes()
-    );
-  };
-
-  endTime = (end) => {
-    return (
-      (end.getHours() < 10 ? '0' : '') +
-      end.getHours() +
-      '' +
-      (end.getMinutes() < 10 ? '0' : '') +
-      end.getMinutes()
-    );
+  changeRoom = () => {
+    this.setState({ room: 2 });
   };
 
   render() {
-    const { bookings } = this.state;
-
+    const { schedule } = this.state;
     return (
       <Fragment>
-        <div className="chooser-container">{bookings[0].room}</div>
+        <div className="chooser-container">
+          {schedule[this.state.room].title}
+        </div>
         <div className="weekdays-container">
           <div className="week-label monday">MÅNDAG</div>
           <div className="week-label tuesday">TISDAG</div>
@@ -47,7 +34,7 @@ class Schedule extends Component {
           <div className="week-label thursday">TORSDAG</div>
           <div className="week-label friday">FREDAG</div>
         </div>
-        <div id="schedule-container" className="schedule-container">
+        <div className="schedule-container" id="schedule-container">
           <div className="time-divider-0800"></div>
           <div className="time-legend time-0800">08:00</div>
           <div className="time-divider-0900"></div>
@@ -74,39 +61,11 @@ class Schedule extends Component {
           <div className="time-legend time-1900">19:00</div>
           <div className="time-divider-2000"></div>
           <div className="time-legend time-2000">20:00</div>
-          {bookings.map((booking) => (
-            <div
-              key={booking.id}
-              className="booked-item"
-              style={{
-                backgroundColor: booking.color,
-                gridColumn: booking.day,
-                gridRow:
-                  't' +
-                  this.startTime(booking.start) +
-                  ' / t' +
-                  this.endTime(booking.end),
-              }}
-            >
-              <div className="booked-item-container">
-                <div className="start-time">
-                  {[
-                    this.startTime(booking.start).slice(0, 2),
-                    ':',
-                    this.startTime(booking.start).slice(2),
-                  ].join('')}
-                </div>
-                <div className="item-info">{booking.user}</div>
-                <div className="end-time">
-                  {[
-                    this.endTime(booking.end).slice(0, 2),
-                    ':',
-                    this.endTime(booking.end).slice(2),
-                  ].join('')}
-                </div>
-              </div>
-            </div>
-          ))}
+          {schedule[this.state.room].bookings.map(
+            ({ id, ...otherBookingProps }) => (
+              <Booking key={id} {...otherBookingProps} />
+            )
+          )}
         </div>
         <BookingButton />
       </Fragment>
