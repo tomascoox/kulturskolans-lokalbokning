@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 
 import Booking from '../booking/booking.component';
-import BookingButton from '../booking-button/booking-button.component';
+import CreateBooking from '../create-booking/create-booking.component';
 
 import BOOKINGS_DATA from './schedule-data.js';
 
@@ -67,7 +67,7 @@ class Schedule extends Component {
             )
           )}
         </div>
-        <BookingButton />
+        <CreateBooking />
       </Fragment>
     );
   }
