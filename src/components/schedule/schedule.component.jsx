@@ -1,23 +1,37 @@
 import React, { Component, Fragment } from 'react';
 
 import Booking from '../booking/booking.component';
-import CreateBooking from '../create-booking/create-booking.component';
+import BookingHandler from '../booking-handler/booking-handler.component';
 
 import BOOKINGS_DATA from './schedule-data.js';
 
 import './schedule.styles.scss';
+import newBookingButton from '../../assets/newBookingButton.svg';
 
 class Schedule extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      room: 0,
+      room: 2,
       schedule: BOOKINGS_DATA,
+      bookingHandlerActive: false,
     };
   }
 
-  changeRoom = () => {
-    this.setState({ room: 2 });
+  handleSubmit = async (event) => {
+    event.preventDefault();
+  };
+
+  showBookingHandler = () => {
+    this.setState({
+      bookingHandlerActive: true,
+    });
+  };
+
+  hideBookingHandler = () => {
+    this.setState({
+      bookingHandlerActive: false,
+    });
   };
 
   render() {
@@ -67,7 +81,21 @@ class Schedule extends Component {
             )
           )}
         </div>
-        <CreateBooking />
+        <button className="booking-button-container">
+          <img
+            alt="new booking"
+            src={newBookingButton}
+            className="newBookingButton"
+            onClick={this.showBookingHandler}
+          />
+        </button>
+        {this.state.bookingHandlerActive ? (
+          <BookingHandler
+            title="BOKA LOKAL"
+            hideBookingHandler={this.hideBookingHandler}
+            handleSubmit={this.handleSubmit}
+          />
+        ) : null}
       </Fragment>
     );
   }
