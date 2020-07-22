@@ -1,8 +1,13 @@
 import { createSelector } from 'reselect';
 
-const selectRoom = (state) => state.schedule;
+const selectSchedule = (state) => state.schedule;
 
-export const selectCurrentRoom = createSelector(
-  [selectRoom],
-  (schedule) => schedule.currentRoom
+export const selectScheduleRoomdata = createSelector(
+  [selectSchedule],
+  (schedule) => schedule.roomdata
+);
+
+export const selectScheduleCurrentroom = createSelector(
+  [selectSchedule],
+  (schedule) => schedule.currentroom
 );

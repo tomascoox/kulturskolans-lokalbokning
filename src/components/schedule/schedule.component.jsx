@@ -1,19 +1,23 @@
 import React, { Component, Fragment } from 'react';
 
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
+
+import { selectScheduleRoomdata } from '../../redux/schedule/schedule.selectors';
+import { selectScheduleCurrentroom } from '../../redux/schedule/schedule.selectors';
+
 import Booking from '../booking/booking.component';
 import BookingHandler from '../booking-handler/booking-handler.component';
 
-import BOOKINGS_DATA from './schedule-data.js';
+import newBookingButton from '../../assets/newBookingButton.svg';
+import { Dropdown } from 'semantic-ui-react';
 
 import './schedule.styles.scss';
-import newBookingButton from '../../assets/newBookingButton.svg';
 
 class Schedule extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      room: 2,
-      schedule: BOOKINGS_DATA,
       bookingHandlerActive: false,
     };
   }
@@ -35,12 +39,27 @@ class Schedule extends Component {
   };
 
   render() {
-    const { schedule } = this.state;
+    const { roomdata, currentroom } = this.props;
+
+    let roomOptions = [];
+    for (let index = 0; index < roomdata.length; index++) {
+      let valueToPush = {};
+      valueToPush['key'] = roomdata[index]['id'];
+      valueToPush['text'] = roomdata[index]['title'];
+      valueToPush['value'] = roomdata[index]['title'];
+      roomOptions.push(valueToPush);
+    }
+
     return (
       <Fragment>
         <div className="chooser-container">
-          {schedule[this.state.room].title}
+          <Dropdown
+            inline
+            options={roomOptions}
+            defaultValue={roomdata[currentroom]['title']}
+          />
         </div>
+
         <div className="weekdays-container">
           <div className="week-label monday">MÅNDAG</div>
           <div className="week-label tuesday">TISDAG</div>
@@ -75,7 +94,7 @@ class Schedule extends Component {
           <div className="time-legend time-1900">19:00</div>
           <div className="time-divider-2000"></div>
           <div className="time-legend time-2000">20:00</div>
-          {schedule[this.state.room].bookings.map(
+          {roomdata[currentroom].bookings.map(
             ({ id, ...otherBookingProps }) => (
               <Booking key={id} {...otherBookingProps} />
             )
@@ -101,4 +120,9 @@ class Schedule extends Component {
   }
 }
 
-export default Schedule;
+const mapStateToProps = createStructuredSelector({
+  roomdata: selectScheduleRoomdata,
+  currentroom: selectScheduleCurrentroom,
+});
+
+export default connect(mapStateToProps)(Schedule);
