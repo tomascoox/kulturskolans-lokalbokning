@@ -1,11 +1,25 @@
 .chooser-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   background-color: rgb(255, 255, 255);
   width: 100%;
+  height: 3em;
   font-family: Muli;
   font-weight: 700;
   font-size: 6vw;
   text-align: center;
   line-height: 1;
+
+  .ui.dropdown .menu > .item {
+    font-size: 0.8em;
+  }
+
+  .ui.inline.dropdown .dropdown.icon {
+    vertical-align: top;
+    margin: 0 0 0 20px;
+  }
 }
 
 .weekdays-container {

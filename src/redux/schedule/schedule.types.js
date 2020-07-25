@@ -1,4 +1,6 @@
-export const ScheduleActionTypes = {
+const ScheduleActionTypes = {
   TOGGLE_BOOKINGHANDLER_HIDDEN: 'TOGGLE_BOOKINGHANDLER_HIDDEN',
-  SET_CURRENT_ROOM: 'SET_CURRENT_ROOM',
+  UPDATE_ROOMDATA: 'UPDATE_ROOMDATA',
 };
+
+export default ScheduleActionTypes;

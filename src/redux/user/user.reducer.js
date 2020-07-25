@@ -2,10 +2,16 @@ import { UserActionTypes } from './user.types';
 
 const INITIAL_STATE = {
   currentUser: null,
+  currentroom: 'Musiksalen-Arena',
 };
 
 const userReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
+    case UserActionTypes.SET_CURRENT_ROOM:
+      return {
+        ...state,
+        currentroom: action.payload,
+      };
     case UserActionTypes.SET_CURRENT_USER:
       return {
         ...state,

@@ -1,10 +1,11 @@
-import React, { Component, Fragment } from 'react';
+import React, { Fragment } from 'react';
 
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 
+import { setCurrentRoom } from '../../redux/user/user.actions';
 import { selectScheduleRoomdata } from '../../redux/schedule/schedule.selectors';
-import { selectScheduleCurrentroom } from '../../redux/schedule/schedule.selectors';
+import { selectUserCurrentroom } from '../../redux/user/user.selectors';
 
 import Booking from '../booking/booking.component';
 import BookingHandler from '../booking-handler/booking-handler.component';
@@ -14,49 +15,53 @@ import { Dropdown } from 'semantic-ui-react';
 
 import './schedule.styles.scss';
 
-class Schedule extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      bookingHandlerActive: false,
-    };
-  }
+const handleSubmit = async (event) => {
+  event.preventDefault();
+};
 
-  handleSubmit = async (event) => {
-    event.preventDefault();
-  };
+const showBookingHandler = () => {
+  console.log('Show bookinghandler!');
+};
 
-  showBookingHandler = () => {
-    this.setState({
-      bookingHandlerActive: true,
-    });
-  };
+const hideBookingHandler = () => {
+  console.log('Hide bookinghandler!');
+};
 
-  hideBookingHandler = () => {
-    this.setState({
-      bookingHandlerActive: false,
-    });
-  };
-
+class Schedule extends React.Component {
   render() {
-    const { roomdata, currentroom } = this.props;
+    const { roomdata, currentroom, setCurrentRoom } = this.props;
 
     let roomOptions = [];
-    for (let index = 0; index < roomdata.length; index++) {
+    for (const [key, value] of Object.entries(roomdata)) {
       let valueToPush = {};
-      valueToPush['key'] = roomdata[index]['id'];
-      valueToPush['text'] = roomdata[index]['title'];
-      valueToPush['value'] = roomdata[index]['title'];
+      valueToPush['key'] = key;
+      valueToPush['text'] = key;
+      valueToPush['value'] = key;
       roomOptions.push(valueToPush);
     }
+
+    const onChangeRoom = (event, data) => {
+      const { value } = data;
+      setCurrentRoom(value);
+    };
+
+    const convertFirebaseTimestampToDate = (timeStamp) => {
+      let firebaseSeconds = timeStamp.seconds;
+      let firebasenanoseconds = timeStamp.nanoseconds;
+      let date = new Date(
+        firebaseSeconds * 1000 + firebasenanoseconds / 1000000
+      );
+      return date;
+    };
 
     return (
       <Fragment>
         <div className="chooser-container">
           <Dropdown
             inline
+            defaultValue={currentroom}
             options={roomOptions}
-            defaultValue={roomdata[currentroom]['title']}
+            onChange={onChangeRoom}
           />
         </div>
 
@@ -95,8 +100,15 @@ class Schedule extends Component {
           <div className="time-divider-2000"></div>
           <div className="time-legend time-2000">20:00</div>
           {roomdata[currentroom].bookings.map(
-            ({ id, ...otherBookingProps }) => (
-              <Booking key={id} {...otherBookingProps} />
+            ({ id, color, start, end, user, day }) => (
+              <Booking
+                key={id}
+                start={convertFirebaseTimestampToDate(start)}
+                end={convertFirebaseTimestampToDate(end)}
+                color={color}
+                user={user}
+                day={day}
+              />
             )
           )}
         </div>
@@ -105,14 +117,14 @@ class Schedule extends Component {
             alt="new booking"
             src={newBookingButton}
             className="newBookingButton"
-            onClick={this.showBookingHandler}
+            onClick={showBookingHandler()}
           />
         </button>
-        {this.state.bookingHandlerActive ? (
+        {false ? (
           <BookingHandler
             title="BOKA LOKAL"
-            hideBookingHandler={this.hideBookingHandler}
-            handleSubmit={this.handleSubmit}
+            hideBookingHandler={hideBookingHandler()}
+            handleSubmit={handleSubmit()}
           />
         ) : null}
       </Fragment>
@@ -120,9 +132,13 @@ class Schedule extends Component {
   }
 }
 
-const mapStateToProps = createStructuredSelector({
-  roomdata: selectScheduleRoomdata,
-  currentroom: selectScheduleCurrentroom,
+const mapDispatchToProps = (dispatch) => ({
+  setCurrentRoom: (item) => dispatch(setCurrentRoom(item)),
 });
 
-export default connect(mapStateToProps)(Schedule);
+const mapStateToProps = createStructuredSelector({
+  currentroom: selectUserCurrentroom,
+  roomdata: selectScheduleRoomdata,
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Schedule);

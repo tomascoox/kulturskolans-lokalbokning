@@ -7,7 +7,8 @@ export const selectScheduleRoomdata = createSelector(
   (schedule) => schedule.roomdata
 );
 
-export const selectScheduleCurrentroom = createSelector(
-  [selectSchedule],
-  (schedule) => schedule.currentroom
+export const selectRoomdataForPreview = createSelector(
+  [selectScheduleRoomdata],
+  (roomdata) =>
+    roomdata ? Object.keys(roomdata).map((key) => roomdata[key]) : []
 );
