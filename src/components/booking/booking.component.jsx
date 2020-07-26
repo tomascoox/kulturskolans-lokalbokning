@@ -3,8 +3,6 @@ import React from 'react';
 import './booking.styles.scss';
 
 const Booking = ({ id, user, day, start, end, color }) => {
-  console.log(user, day, start, end, color);
-
   return (
     <div
       key={id}

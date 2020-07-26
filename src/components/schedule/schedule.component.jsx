@@ -112,21 +112,6 @@ class Schedule extends React.Component {
             )
           )}
         </div>
-        <button className="booking-button-container">
-          <img
-            alt="new booking"
-            src={newBookingButton}
-            className="newBookingButton"
-            onClick={showBookingHandler()}
-          />
-        </button>
-        {false ? (
-          <BookingHandler
-            title="BOKA LOKAL"
-            hideBookingHandler={hideBookingHandler()}
-            handleSubmit={handleSubmit()}
-          />
-        ) : null}
       </Fragment>
     );
   }

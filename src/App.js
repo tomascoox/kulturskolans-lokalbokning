@@ -18,6 +18,20 @@ import { createStructuredSelector } from 'reselect';
 
 import WithSpinner from './components/with-spinner/with-spinner.component';
 
+import Sidebar from './components/sidebar/sidebar.component';
+
+import {
+  Container,
+  Divider,
+  Dropdown,
+  Grid,
+  Header,
+  Image,
+  List,
+  Menu,
+  Segment,
+} from 'semantic-ui-react';
+
 const HomePageWithSpinner = WithSpinner(HomePage);
 
 class App extends Component {
@@ -60,10 +74,43 @@ class App extends Component {
     this.unsubscribeFromSnapshot();
   }
 
+  handleItemClick = (e, { name }) => this.setState({ activeItem: name });
+
   render() {
     const { loading } = this.state;
+    const { activeItem } = this.state;
+    const { currentUser } = this.props;
+    console.log(currentUser);
+
     return (
       <Fragment>
+        <Menu fixed="top" inverted>
+          <Container>
+            <Menu.Item
+              as="a"
+              href="/"
+              name="schema"
+              active={activeItem === 'features'}
+              onClick={this.handleItemClick}
+            >
+              SCHEMA
+            </Menu.Item>
+            {!this.props.currentUser ? (
+              <Menu.Item
+                as="a"
+                href="/signin"
+                name="login"
+                active={activeItem === 'login'}
+                onClick={this.handleItemClick}
+              >
+                LOGIN
+              </Menu.Item>
+            ) : (
+              <Menu.Item onClick={() => auth.signOut()}>LOGOUT</Menu.Item>
+            )}
+          </Container>
+        </Menu>
+
         <Switch>
           <Route
             exact

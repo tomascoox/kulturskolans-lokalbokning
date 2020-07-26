@@ -1,7 +1,7 @@
 .booked-item {
   color: #fff;
   border-radius: 8px;
-  padding: 4px;
+  padding: 3px;
 }
 
 .booked-item-container {
@@ -13,7 +13,7 @@
 }
 
 .booked-item-container .start-time {
-  font-size: 1.5vh;
+  font-size: 1.3vh;
   line-height: 1vh;
   grid-column: 1;
   grid-row: 1;
@@ -23,8 +23,8 @@
 }
 
 .booked-item-container .item-info {
-  font-size: 1.5vh;
-  line-height: 1vh;
+  font-size: 1.4vh;
+  line-height: 0;
   font-weight: 700;
   grid-column: 2;
   grid-row: 2;
@@ -33,7 +33,7 @@
 }
 
 .booked-item-container .end-time {
-  font-size: 1.5vh;
+  font-size: 1.3vh;
   line-height: 1vh;
   grid-column: 3;
   grid-row: 3;
