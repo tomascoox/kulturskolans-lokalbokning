@@ -2,7 +2,10 @@ import { UserActionTypes } from './user.types';
 
 const INITIAL_STATE = {
   currentUser: null,
-  currentroom: 'Musiksalen-Arena',
+  currentRoom: {
+    id: '1SvJOLBYz4kfRyx9hdie',
+    roomTitle: 'Ekohuset-Söråker',
+  },
 };
 
 const userReducer = (state = INITIAL_STATE, action) => {
@@ -10,7 +13,7 @@ const userReducer = (state = INITIAL_STATE, action) => {
     case UserActionTypes.SET_CURRENT_ROOM:
       return {
         ...state,
-        currentroom: action.payload,
+        currentRoom: action.payload,
       };
     case UserActionTypes.SET_CURRENT_USER:
       return {

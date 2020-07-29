@@ -35,6 +35,37 @@ export const createUserProfileDocument = async (userAuth, additionalData) => {
   return userRef;
 };
 
+export const createNewBooking = async (
+  weekDay,
+  startTime,
+  endTime,
+  currentUser,
+  currentRoom
+) => {
+  let { id, displayName, team, color } = currentUser;
+  let roomID = currentRoom.id;
+  let roomTitle = currentRoom.roomTitle;
+
+  if (currentUser) {
+    try {
+      const bookingRef = await firestore.collection('bookings');
+
+      await bookingRef.add({
+        createdAt: new Date(),
+        userID: id,
+        userDisplayName: displayName,
+        team: team,
+        color: color,
+        startTime: startTime,
+        endTime: endTime,
+        roomID: roomID,
+        roomTitle: roomTitle,
+        weekDay: weekDay,
+      });
+    } catch (error) {}
+  }
+};
+
 export const addCollectionAndDocuments = async (
   collectionKey,
   objectsToAdd
@@ -50,9 +81,11 @@ export const addCollectionAndDocuments = async (
   return await batch.commit();
 };
 
+// ROOMDATA
 export const convertRoomdataSnapshotToMap = (roomdata) => {
   const transformedRoomdata = roomdata.docs.map((doc) => {
     const { title, bookings } = doc.data();
+
     return {
       title,
       bookings,
@@ -60,6 +93,60 @@ export const convertRoomdataSnapshotToMap = (roomdata) => {
   });
   return transformedRoomdata.reduce((accumulator, collection) => {
     accumulator[collection.title] = collection;
+    return accumulator;
+  }, {});
+};
+
+// BOOKINGS
+export const convertBookingsSnapshotToMap = (bookings) => {
+  const transformedBookings = bookings.docs.map((doc) => {
+    const id = doc.id;
+    const {
+      color,
+      createdAt,
+      endTime,
+      roomID,
+      roomTitle,
+      startTime,
+      team,
+      userDisplayName,
+      userID,
+      weekDay,
+    } = doc.data();
+
+    return {
+      id,
+      color,
+      createdAt,
+      endTime,
+      roomID,
+      roomTitle,
+      startTime,
+      team,
+      userDisplayName,
+      userID,
+      weekDay,
+    };
+  });
+  return transformedBookings.reduce((accumulator, collection) => {
+    accumulator[collection.id] = collection;
+    return accumulator;
+  }, {});
+};
+
+// ROOMS
+export const convertRoomsSnapshotToMap = (rooms) => {
+  const transformedRooms = rooms.docs.map((doc) => {
+    const id = doc.id;
+    const { roomTitle } = doc.data();
+
+    return {
+      id,
+      roomTitle,
+    };
+  });
+  return transformedRooms.reduce((accumulator, collection) => {
+    accumulator[collection.id] = collection;
     return accumulator;
   }, {});
 };

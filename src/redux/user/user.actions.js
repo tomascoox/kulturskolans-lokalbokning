@@ -5,7 +5,7 @@ export const setCurrentUser = (user) => ({
   payload: user,
 });
 
-export const setCurrentRoom = (item) => ({
+export const setCurrentRoom = (room) => ({
   type: UserActionTypes.SET_CURRENT_ROOM,
-  payload: item,
+  payload: room,
 });

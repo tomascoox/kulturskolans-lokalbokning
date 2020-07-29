@@ -4,45 +4,63 @@ import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 
 import { setCurrentRoom } from '../../redux/user/user.actions';
-import { selectScheduleRoomdata } from '../../redux/schedule/schedule.selectors';
-import { selectUserCurrentroom } from '../../redux/user/user.selectors';
+import { selectRoomdata } from '../../redux/schedule/schedule.selectors';
+import { selectBookings } from '../../redux/schedule/schedule.selectors';
+import { selectRooms } from '../../redux/schedule/schedule.selectors';
+import { selectCurrentRoom } from '../../redux/user/user.selectors';
+import { selectCurrentUser } from '../../redux/user/user.selectors';
+import { fetchBookingsStartAsync } from '../../redux/schedule/schedule.actions';
 
 import Booking from '../booking/booking.component';
-import BookingHandler from '../booking-handler/booking-handler.component';
 
-import newBookingButton from '../../assets/newBookingButton.svg';
 import { Dropdown } from 'semantic-ui-react';
 
 import './schedule.styles.scss';
 
-const handleSubmit = async (event) => {
-  event.preventDefault();
-};
-
-const showBookingHandler = () => {
-  console.log('Show bookinghandler!');
-};
-
-const hideBookingHandler = () => {
-  console.log('Hide bookinghandler!');
-};
-
 class Schedule extends React.Component {
+  componentDidMount() {}
+
   render() {
-    const { roomdata, currentroom, setCurrentRoom } = this.props;
+    const {
+      bookings,
+      rooms,
+      roomdata,
+      currentRoom,
+      setCurrentRoom,
+      currentUser,
+    } = this.props;
 
     let roomOptions = [];
-    for (const [key, value] of Object.entries(roomdata)) {
-      let valueToPush = {};
-      valueToPush['key'] = key;
-      valueToPush['text'] = key;
-      valueToPush['value'] = key;
-      roomOptions.push(valueToPush);
+    if (rooms) {
+      Object.entries(rooms).map(([key, value]) => {
+        let valueToPush = {};
+        valueToPush['key'] = key;
+        valueToPush['text'] = Object.values(value)[1];
+        valueToPush['value'] = key;
+        roomOptions.push(valueToPush);
+      });
     }
+
+    const updateBooking = () => {
+      alert('I will update this booking now, woohoo!');
+    };
 
     const onChangeRoom = (event, data) => {
       const { value } = data;
-      setCurrentRoom(value);
+
+      let roomTitle = Object.entries(rooms)
+        .map((el) => el[1])
+        .map((el) => Object.values(el))
+        .find((el) => el[0] === value)[1];
+
+      const newCurrentRoom = {
+        id: value,
+        roomTitle: roomTitle,
+      };
+
+      setCurrentRoom(newCurrentRoom);
+      const { fetchBookingsStartAsync } = this.props;
+      fetchBookingsStartAsync();
     };
 
     const convertFirebaseTimestampToDate = (timeStamp) => {
@@ -54,12 +72,17 @@ class Schedule extends React.Component {
       return date;
     };
 
+    let defaultRoom = '';
+    if (currentRoom) {
+      defaultRoom = currentRoom.id;
+    }
+
     return (
       <Fragment>
         <div className="chooser-container">
           <Dropdown
             inline
-            defaultValue={currentroom}
+            defaultValue={defaultRoom}
             options={roomOptions}
             onChange={onChangeRoom}
           />
@@ -99,31 +122,47 @@ class Schedule extends React.Component {
           <div className="time-legend time-1900">19:00</div>
           <div className="time-divider-2000"></div>
           <div className="time-legend time-2000">20:00</div>
-          {roomdata[currentroom].bookings.map(
-            ({ id, color, start, end, user, day }) => (
-              <Booking
-                key={id}
-                start={convertFirebaseTimestampToDate(start)}
-                end={convertFirebaseTimestampToDate(end)}
-                color={color}
-                user={user}
-                day={day}
-              />
-            )
-          )}
+          {bookings && currentRoom
+            ? Object.values(bookings)
+                .filter((booking) => booking.roomID === currentRoom.id)
+                .map(
+                  ({
+                    id,
+                    color,
+                    startTime,
+                    endTime,
+                    userDisplayName,
+                    weekDay,
+                  }) => (
+                    <Booking
+                      key={id}
+                      startTime={convertFirebaseTimestampToDate(startTime)}
+                      endTime={convertFirebaseTimestampToDate(endTime)}
+                      color={color}
+                      userDisplayName={userDisplayName}
+                      weekDay={weekDay}
+                      onClick={updateBooking}
+                    />
+                  )
+                )
+            : ''}
         </div>
       </Fragment>
     );
   }
 }
 
-const mapDispatchToProps = (dispatch) => ({
-  setCurrentRoom: (item) => dispatch(setCurrentRoom(item)),
+const mapStateToProps = createStructuredSelector({
+  currentUser: selectCurrentUser,
+  currentRoom: selectCurrentRoom,
+  roomdata: selectRoomdata,
+  bookings: selectBookings,
+  rooms: selectRooms,
 });
 
-const mapStateToProps = createStructuredSelector({
-  currentroom: selectUserCurrentroom,
-  roomdata: selectScheduleRoomdata,
+const mapDispatchToProps = (dispatch) => ({
+  setCurrentRoom: (room) => dispatch(setCurrentRoom(room)),
+  fetchBookingsStartAsync: () => dispatch(fetchBookingsStartAsync()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Schedule);
