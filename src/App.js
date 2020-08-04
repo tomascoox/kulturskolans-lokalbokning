@@ -1,5 +1,7 @@
 import React, { Component, Fragment } from 'react';
+
 import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
+
 import { connect } from 'react-redux';
 
 import './App.css';
@@ -137,7 +139,6 @@ class App extends Component {
             onToggleForm={this.handleBookingHandler}
           />
         ) : null}
-
         <Switch>
           <Route
             exact
