@@ -3,8 +3,8 @@ import { UserActionTypes } from './user.types';
 const INITIAL_STATE = {
   currentUser: null,
   currentRoom: {
-    id: '1SvJOLBYz4kfRyx9hdie',
-    roomTitle: 'Ekohuset-Söråker',
+    id: '2JitCmWBAxqBo5sq8vdR',
+    roomTitle: 'Arena - Musiksal',
   },
   selectedBooking: {
     showBookingHandler: false,
