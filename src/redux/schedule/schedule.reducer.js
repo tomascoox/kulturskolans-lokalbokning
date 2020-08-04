@@ -1,7 +1,6 @@
 import ScheduleActionTypes from './schedule.types';
 
 const INITIAL_STATE = {
-  roomdata: null,
   bookings: null,
   rooms: null,
   isFetching: false,
@@ -10,26 +9,6 @@ const INITIAL_STATE = {
 
 const scheduleReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case ScheduleActionTypes.FETCH_ROOMDATA_START:
-      return {
-        ...state,
-        isFetching: true,
-      };
-
-    case ScheduleActionTypes.FETCH_ROOMDATA_SUCCESS:
-      return {
-        ...state,
-        isFetching: false,
-        roomdata: action.payload,
-      };
-
-    case ScheduleActionTypes.FETCH_ROOMDATA_FAILURE:
-      return {
-        ...state,
-        isFetching: false,
-        errorMessage: action.payload,
-      };
-
     // BOOKINGS
     case ScheduleActionTypes.FETCH_BOOKINGS_START:
       return {

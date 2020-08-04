@@ -1,37 +1,65 @@
 import React from 'react';
 
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
+
+import { setSelectedBooking } from '../../redux/user/user.actions';
+import { selectSelectedBooking } from '../../redux/user/user.selectors';
+
 import './booking.styles.scss';
 
-const Booking = ({
-  id,
-  userDisplayName,
-  weekDay,
-  startTime,
-  endTime,
-  color,
-}) => {
+const Booking = (props) => {
   return (
     <div
-      key={id}
-      className="booked-item"
+      key={props.id}
+      className={`booked-item ${
+        props.currentUser && props.userID === props.currentUser.id
+          ? 'updateCursor'
+          : ''
+      }`}
       style={{
-        backgroundColor: `${color}`,
-        gridColumn: `${weekDay}`,
-        gridRow: `t${startTime
+        backgroundColor: `${props.color}`,
+        gridColumn: `${props.weekDay}`,
+        gridRow: `t${props.startTime
           .toTimeString()
           .slice(0, 5)
-          .replace(':', '')} / t${endTime
+          .replace(':', '')} / t${props.endTime
           .toTimeString()
           .slice(0, 5)
           .replace(':', '')}`,
       }}
+      onClick={() =>
+        props.currentUser && props.userID === props.currentUser.id
+          ? props.setSelectedBooking({
+              bookingID: props.bookingID,
+              startTime: props.startTime,
+              endTime: props.endTime,
+              weekDay: props.weekDay,
+              userDisplayName: props.userDisplayName,
+              showBookingHandler: true,
+            })
+          : null
+      }
     >
       <div className="booked-item-container">
-        <div className="start-time">{startTime.toTimeString().slice(0, 5)}</div>
-        <div className="item-info">{userDisplayName}</div>
-        <div className="end-time">{endTime.toTimeString().slice(0, 5)}</div>
+        <div className="start-time">
+          {props.startTime.toTimeString().slice(0, 5)}
+        </div>
+        <div className="item-info">{props.userDisplayName}</div>
+        <div className="end-time">
+          {props.endTime.toTimeString().slice(0, 5)}
+        </div>
       </div>
     </div>
   );
 };
-export default Booking;
+
+const mapStateToProps = createStructuredSelector({
+  selectedBooking: selectSelectedBooking,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  setSelectedBooking: (booking) => dispatch(setSelectedBooking(booking)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Booking);

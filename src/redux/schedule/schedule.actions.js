@@ -2,40 +2,9 @@ import ScheduleActionTypes from './schedule.types';
 
 import {
   firestore,
-  convertRoomdataSnapshotToMap,
   convertBookingsSnapshotToMap,
   convertRoomsSnapshotToMap,
 } from '../../firebase/firebase.utils';
-
-// ROOMDATA
-export const fetchRoomdataStart = (roomdataMap) => ({
-  type: ScheduleActionTypes.FETCH_ROOMDATA_START,
-});
-
-export const fetchRoomdataSuccess = (roomdataMap) => ({
-  type: ScheduleActionTypes.FETCH_ROOMDATA_SUCCESS,
-  payload: roomdataMap,
-});
-
-export const fetchRoomdataFailure = (errorMessage) => ({
-  type: ScheduleActionTypes.FETCH_ROOMDATA_FAILURE,
-  payload: errorMessage,
-});
-
-export const fetchRoomdataStartAsync = () => {
-  return (dispatch) => {
-    const roomRef = firestore.collection('roomdata');
-    dispatch(fetchRoomdataStart());
-
-    roomRef
-      .get()
-      .then((snapshot) => {
-        const roomdataMap = convertRoomdataSnapshotToMap(snapshot);
-        dispatch(fetchRoomdataSuccess(roomdataMap));
-      })
-      .catch((error) => dispatch(fetchRoomdataFailure(error.message)));
-  };
-};
 
 // BOOKINGS
 export const fetchBookingsStart = (bookingsMap) => ({
@@ -55,16 +24,18 @@ export const fetchBookingsFailure = (errorMessage) => ({
 export const fetchBookingsStartAsync = () => {
   return (dispatch) => {
     const bookingRef = firestore.collection('bookings');
+
     dispatch(fetchBookingsStart());
 
-    bookingRef
-      .get()
-      .then((snapshot) => {
+    bookingRef.onSnapshot(
+      function (snapshot) {
         const bookingsMap = convertBookingsSnapshotToMap(snapshot);
-
         dispatch(fetchBookingsSuccess(bookingsMap));
-      })
-      .catch((error) => dispatch(fetchBookingsFailure(error.message)));
+      },
+      function (error) {
+        dispatch(fetchBookingsFailure(error.message));
+      }
+    );
   };
 };
 

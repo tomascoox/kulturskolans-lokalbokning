@@ -4,31 +4,48 @@ import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 
 import { setCurrentRoom } from '../../redux/user/user.actions';
-import { selectRoomdata } from '../../redux/schedule/schedule.selectors';
 import { selectBookings } from '../../redux/schedule/schedule.selectors';
 import { selectRooms } from '../../redux/schedule/schedule.selectors';
 import { selectCurrentRoom } from '../../redux/user/user.selectors';
 import { selectCurrentUser } from '../../redux/user/user.selectors';
 import { fetchBookingsStartAsync } from '../../redux/schedule/schedule.actions';
 
+import { setSelectedBooking } from '../../redux/user/user.actions';
+import { selectSelectedBooking } from '../../redux/user/user.selectors';
+
+import _ from 'lodash';
+
 import Booking from '../booking/booking.component';
 
-import { Dropdown } from 'semantic-ui-react';
+import { deleteBooking, updateBooking } from '../../firebase/firebase.utils';
+
+import { Dropdown, Button, Form } from 'semantic-ui-react';
+import timePickerItems from './timePickerIItems';
 
 import './schedule.styles.scss';
 
 class Schedule extends React.Component {
-  componentDidMount() {}
-
   render() {
     const {
+      selectedBooking,
       bookings,
       rooms,
-      roomdata,
       currentRoom,
       setCurrentRoom,
       currentUser,
     } = this.props;
+
+    const { showBookingHandler } = selectedBooking;
+
+    function sortOptions(a, b) {
+      if (a.text < b.text) {
+        return -1;
+      }
+      if (a.text > b.text) {
+        return 1;
+      }
+      return 0;
+    }
 
     let roomOptions = [];
     if (rooms) {
@@ -38,11 +55,33 @@ class Schedule extends React.Component {
         valueToPush['text'] = Object.values(value)[1];
         valueToPush['value'] = key;
         roomOptions.push(valueToPush);
+        roomOptions.sort();
       });
     }
 
-    const updateBooking = () => {
-      alert('I will update this booking now, woohoo!');
+    roomOptions.sort(sortOptions);
+
+    const weekDays = [
+      { key: '2', value: '2', text: 'Måndag' },
+      { key: '3', value: '3', text: 'Tisdag' },
+      { key: '4', value: '4', text: 'Onsdag' },
+      { key: '5', value: '5', text: 'Torsdag' },
+      { key: '6', value: '6', text: 'Fredag' },
+    ];
+
+    const handleDelete = () => {
+      const { bookingID } = this.props.selectedBooking;
+      deleteBooking(bookingID);
+    };
+
+    const handleSubmit = () => {
+      const {
+        bookingID,
+        startTime,
+        endTime,
+        weekDay,
+      } = this.props.selectedBooking;
+      updateBooking(bookingID, startTime, endTime, weekDay);
     };
 
     const onChangeRoom = (event, data) => {
@@ -59,8 +98,6 @@ class Schedule extends React.Component {
       };
 
       setCurrentRoom(newCurrentRoom);
-      const { fetchBookingsStartAsync } = this.props;
-      fetchBookingsStartAsync();
     };
 
     const convertFirebaseTimestampToDate = (timeStamp) => {
@@ -70,6 +107,10 @@ class Schedule extends React.Component {
         firebaseSeconds * 1000 + firebasenanoseconds / 1000000
       );
       return date;
+    };
+
+    const convertTimeToDate = (value) => {
+      return new Date('June 22, 2020 ' + value + ':00');
     };
 
     let defaultRoom = '';
@@ -85,6 +126,8 @@ class Schedule extends React.Component {
             defaultValue={defaultRoom}
             options={roomOptions}
             onChange={onChangeRoom}
+            scrolling
+            search
           />
         </div>
 
@@ -131,22 +174,105 @@ class Schedule extends React.Component {
                     color,
                     startTime,
                     endTime,
+                    userID,
                     userDisplayName,
                     weekDay,
                   }) => (
                     <Booking
                       key={id}
+                      bookingID={id}
                       startTime={convertFirebaseTimestampToDate(startTime)}
                       endTime={convertFirebaseTimestampToDate(endTime)}
                       color={color}
+                      userID={userID}
                       userDisplayName={userDisplayName}
                       weekDay={weekDay}
-                      onClick={updateBooking}
+                      currentUser={currentUser}
                     />
                   )
                 )
             : ''}
         </div>
+
+        {/* UPDATE/DELETE BOOKINGHANDLER */}
+
+        {showBookingHandler ? (
+          <div className="booking-container">
+            <h2>ÄNDRA/RADERA BOKNING</h2>
+            <Form
+              onSubmit={handleSubmit}
+              size="large"
+              className="bookingForm"
+              unstackable
+            >
+              <Form.Select
+                name="weekDay"
+                value={selectedBooking.weekDay}
+                label="VECKODAG"
+                placeholder="Välj veckodag"
+                options={weekDays}
+                onChange={(e, { name, value }) =>
+                  this.props.setSelectedBooking({
+                    bookingID: selectedBooking.bookingID,
+                    startTime: selectedBooking.startTime,
+                    endTime: selectedBooking.endTime,
+                    weekDay: value,
+                    userDisplayName: selectedBooking.userDisplayName,
+                    showBookingHandler: true,
+                  })
+                }
+              />
+              <Form.Select
+                type="time"
+                name="startTime"
+                value={selectedBooking.startTime.toTimeString().slice(0, 5)}
+                label="START"
+                placeholder="Välj start-tid"
+                options={timePickerItems}
+                onChange={(e, { name, value }) =>
+                  this.props.setSelectedBooking({
+                    bookingID: selectedBooking.bookingID,
+                    startTime: convertTimeToDate(value),
+                    endTime: selectedBooking.endTime,
+                    weekDay: selectedBooking.weekDay,
+                    userDisplayName: selectedBooking.userDisplayName,
+                    showBookingHandler: true,
+                  })
+                }
+              />
+              <Form.Select
+                type="time"
+                name="endTime"
+                value={selectedBooking.endTime.toTimeString().slice(0, 5)}
+                label="SLUT"
+                placeholder="Välj slut-tid"
+                options={timePickerItems}
+                onChange={(e, { name, value }) =>
+                  this.props.setSelectedBooking({
+                    bookingID: selectedBooking.bookingID,
+                    startTime: selectedBooking.startTime,
+                    endTime: convertTimeToDate(value),
+                    weekDay: selectedBooking.weekDay,
+                    userDisplayName: selectedBooking.userDisplayName,
+                    showBookingHandler: true,
+                  })
+                }
+              />
+              <Button.Group size="small">
+                <Button primary content="ÄNDRA" type="submit" />
+                <Button color="red" content="RADERA" onClick={handleDelete} />
+                <Button
+                  content="STÄNG"
+                  onClick={() =>
+                    this.props.setSelectedBooking({
+                      showBookingHandler: false,
+                    })
+                  }
+                />
+              </Button.Group>
+            </Form>
+          </div>
+        ) : null}
       </Fragment>
     );
   }
@@ -155,14 +281,15 @@ class Schedule extends React.Component {
 const mapStateToProps = createStructuredSelector({
   currentUser: selectCurrentUser,
   currentRoom: selectCurrentRoom,
-  roomdata: selectRoomdata,
   bookings: selectBookings,
   rooms: selectRooms,
+  selectedBooking: selectSelectedBooking,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   setCurrentRoom: (room) => dispatch(setCurrentRoom(room)),
   fetchBookingsStartAsync: () => dispatch(fetchBookingsStartAsync()),
+  setSelectedBooking: (booking) => dispatch(setSelectedBooking(booking)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Schedule);

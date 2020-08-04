@@ -7,26 +7,16 @@ import './App.css';
 import HomePage from './pages/homepage/homepage.component';
 import SignInAndSignupPage from './pages/sign-in-and-signup/sign-in-and-signup.component';
 
-import {
-  auth,
-  createUserProfileDocument,
-  createNewBooking,
-} from './firebase/firebase.utils';
+import { auth, createUserProfileDocument } from './firebase/firebase.utils';
 import { setCurrentUser, setCurrentRoom } from './redux/user/user.actions';
 import { selectCurrentUser } from './redux/user/user.selectors';
 import { selectCurrentRoom } from './redux/user/user.selectors';
 
-import { fetchRoomdataStartAsync } from './redux/schedule/schedule.actions';
 import { fetchBookingsStartAsync } from './redux/schedule/schedule.actions';
 import { fetchRoomsStartAsync } from './redux/schedule/schedule.actions';
-import { selectRooms } from './redux/schedule/schedule.selectors';
 
 import {
-  selectIsRoomdataFetching,
-  selectIsRoomdataLoaded,
-  selectIsBookingsFetching,
   selectIsBookingsLoaded,
-  selectIsRoomsFetching,
   selectIsRoomsLoaded,
 } from './redux/schedule/schedule.selectors';
 
@@ -36,45 +26,24 @@ import WithSpinner from './components/with-spinner/with-spinner.component';
 
 import BookingForm from './components/booking-form/booking-form.component';
 
-import {
-  Button,
-  Checkbox,
-  Form,
-  Input,
-  Header,
-  Icon,
-  Image,
-  Menu,
-  Segment,
-  Sidebar,
-} from 'semantic-ui-react';
+import { Menu } from 'semantic-ui-react';
 
 const HomePageWithSpinner = WithSpinner(HomePage);
 
 class App extends Component {
   state = {
-    animation: 'push',
-    direction: 'top',
-    dimmed: false,
-    visible: false,
+    showNewBookingHandler: false,
   };
 
-  handleAnimationChange = (animation) => () =>
-    this.setState((prevState) => ({ animation, visible: !prevState.visible }));
-
-  handleDimmedChange = (e, { checked }) => this.setState({ dimmed: checked });
-
-  handleDirectionChange = (direction) => () =>
-    this.setState({ direction, visible: false });
+  handleBookingHandler = () => () =>
+    this.setState((prevState) => ({
+      showNewBookingHandler: !prevState.showNewBookingHandler,
+    }));
 
   unsubscribeFromAuth = null;
 
   componentDidMount() {
     const { setCurrentUser } = this.props;
-    const { setCurrentRoom } = this.props;
-
-    const { fetchRoomdataStartAsync } = this.props;
-    fetchRoomdataStartAsync();
 
     const { fetchBookingsStartAsync } = this.props;
     fetchBookingsStartAsync();
@@ -99,23 +68,18 @@ class App extends Component {
 
   componentWillUnmount() {
     this.unsubscribeFromAuth();
-    this.unsubscribeFromSnapshot();
   }
 
   handleItemClick = (e, { name }) => this.setState({ activeItem: name });
 
   render() {
-    const { animation, dimmed, direction, visible } = this.state;
-    const vertical = direction === 'bottom' || direction === 'top';
+    const { showNewBookingHandler } = this.state;
 
     const {
       activeItem,
       currentUser,
       currentRoom,
-      isRoomdataFetching,
-      isRoomdataLoaded,
       isBookingsLoaded,
-      isRoomsLoaded,
     } = this.props;
 
     return (
@@ -134,7 +98,7 @@ class App extends Component {
             <Menu.Item
               name="newbooking"
               active={activeItem === 'newbooking'}
-              onClick={this.handleAnimationChange('push')}
+              onClick={this.handleBookingHandler()}
             >
               NY BOKNING
             </Menu.Item>
@@ -153,43 +117,34 @@ class App extends Component {
             <Menu.Item onClick={() => auth.signOut()}>LOGOUT</Menu.Item>
           )}
         </Menu>
-
-        <Sidebar.Pushable>
+        {showNewBookingHandler ? (
           <BookingForm
-            animation="overlay"
-            direction={'top'}
-            visible={visible}
             currentUser={currentUser}
             currentRoom={currentRoom}
-            onToggleForm={this.handleAnimationChange}
+            onToggleForm={this.handleBookingHandler}
           />
+        ) : null}
 
-          <Sidebar.Pusher dimmed={false}>
-            <Switch>
-              <Route
-                exact
-                path="/"
-                render={(props) => (
-                  <HomePageWithSpinner
-                    isLoading={!isRoomdataLoaded}
-                    {...props}
-                  />
-                )}
-              />
-              <Route
-                exact
-                path="/signin"
-                render={() =>
-                  this.props.currentUser ? (
-                    <Redirect to="/" />
-                  ) : (
-                    <SignInAndSignupPage />
-                  )
-                }
-              />
-            </Switch>
-          </Sidebar.Pusher>
-        </Sidebar.Pushable>
+        <Switch>
+          <Route
+            exact
+            path="/"
+            render={(props) => (
+              <HomePageWithSpinner isLoading={!isBookingsLoaded} {...props} />
+            )}
+          />
+          <Route
+            exact
+            path="/signin"
+            render={() =>
+              this.props.currentUser ? (
+                <Redirect to="/" />
+              ) : (
+                <SignInAndSignupPage />
+              )
+            }
+          />
+        </Switch>
       </Fragment>
     );
   }
@@ -198,8 +153,6 @@ class App extends Component {
 const mapStateToProps = createStructuredSelector({
   currentUser: selectCurrentUser,
   currentRoom: selectCurrentRoom,
-  isRoomdataFetching: selectIsRoomdataFetching,
-  isRoomdataLoaded: selectIsRoomdataLoaded,
   isBookingsLoaded: selectIsBookingsLoaded,
   isRoomsLoaded: selectIsRoomsLoaded,
 });
@@ -207,7 +160,6 @@ const mapStateToProps = createStructuredSelector({
 const mapDispatchToProps = (dispatch) => ({
   setCurrentUser: (user) => dispatch(setCurrentUser(user)),
   setCurrentRoom: (room) => dispatch(setCurrentRoom(room)),
-  fetchRoomdataStartAsync: () => dispatch(fetchRoomdataStartAsync()),
   fetchBookingsStartAsync: () => dispatch(fetchBookingsStartAsync()),
   fetchRoomsStartAsync: () => dispatch(fetchRoomsStartAsync()),
 });

@@ -66,6 +66,36 @@ export const createNewBooking = async (
   }
 };
 
+export const updateBooking = async (bookingID, startTime, endTime, weekDay) => {
+  await firestore
+    .collection('bookings')
+    .doc(bookingID)
+    .update({
+      weekDay: weekDay,
+      startTime: startTime,
+      endTime: endTime,
+    })
+    .then(function () {
+      console.log('Document successfully updated!');
+    })
+    .catch(function (error) {
+      console.error('Error updating document: ', error);
+    });
+};
+
+export const deleteBooking = async (bookingID) => {
+  await firestore
+    .collection('bookings')
+    .doc(bookingID)
+    .delete()
+    .then(function () {
+      console.log('Document successfully deleted!');
+    })
+    .catch(function (error) {
+      console.error('Error removing document: ', error);
+    });
+};
+
 export const addCollectionAndDocuments = async (
   collectionKey,
   objectsToAdd
