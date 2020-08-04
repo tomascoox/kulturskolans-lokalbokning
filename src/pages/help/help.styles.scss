@@ -1,0 +1,12 @@
+.help {
+  padding: 70px 70px 55px 70px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+}
+
+div.help > dl {
+  font-size: 1.7rem;
+  line-height: 1.3;
+}

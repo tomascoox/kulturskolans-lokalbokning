@@ -1,11 +1,12 @@
 import React, { Component, Fragment } from 'react';
-import { Switch, Route, Redirect } from 'react-router-dom';
+import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import './App.css';
 
 import HomePage from './pages/homepage/homepage.component';
 import SignInAndSignupPage from './pages/sign-in-and-signup/sign-in-and-signup.component';
+import Help from './pages/help/help.component';
 
 import { auth, createUserProfileDocument } from './firebase/firebase.utils';
 import { setCurrentUser, setCurrentRoom } from './redux/user/user.actions';
@@ -82,6 +83,8 @@ class App extends Component {
       isBookingsLoaded,
     } = this.props;
 
+    console.log(this.props.location.pathname);
+
     return (
       <Fragment>
         <Menu inverted compact fluid>
@@ -92,9 +95,9 @@ class App extends Component {
             active={activeItem === 'schema'}
             onClick={this.handleItemClick}
           >
-            SCHEMA
+            VISA SCHEMAN
           </Menu.Item>
-          {this.props.currentUser ? (
+          {this.props.currentUser && this.props.location.pathname === '/' ? (
             <Menu.Item
               name="newbooking"
               active={activeItem === 'newbooking'}
@@ -103,6 +106,16 @@ class App extends Component {
               NY BOKNING
             </Menu.Item>
           ) : null}
+          <Menu.Item
+            as="a"
+            href="/help"
+            name="help"
+            active={activeItem === 'help'}
+            onClick={this.handleItemClick}
+          >
+            HJÄLP
+          </Menu.Item>
+
           {!this.props.currentUser ? (
             <Menu.Item
               as="a"
@@ -144,6 +157,7 @@ class App extends Component {
               )
             }
           />
+          <Route exact path="/help" component={Help} />
         </Switch>
       </Fragment>
     );
@@ -163,4 +177,4 @@ const mapDispatchToProps = (dispatch) => ({
   fetchBookingsStartAsync: () => dispatch(fetchBookingsStartAsync()),
   fetchRoomsStartAsync: () => dispatch(fetchRoomsStartAsync()),
 });
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));

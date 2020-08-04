@@ -75,6 +75,7 @@ class BookingForm extends React.Component {
             placeholder="Välj slut-tid"
             options={timePickerItems}
             onChange={this.handleChange}
+            search
           />
           <Button.Group>
             <Button primary content="BOKA" type="submit" />
