@@ -6,6 +6,9 @@ import { createStructuredSelector } from 'reselect';
 import { setSelectedBooking } from '../../redux/user/user.actions';
 import { selectSelectedBooking } from '../../redux/user/user.selectors';
 
+import { setToggleUpdateDeleteBooking } from '../../redux/bookingforms/bookingforms.actions';
+import { selectToggleUpdateDeleteBooking } from '../../redux/bookingforms/bookingforms.selectors';
+
 import './booking.styles.scss';
 
 const Booking = (props) => {
@@ -30,14 +33,17 @@ const Booking = (props) => {
       }}
       onClick={() =>
         props.currentUser && props.userID === props.currentUser.id
-          ? props.setSelectedBooking({
+          ? (props.setSelectedBooking({
               bookingID: props.bookingID,
               startTime: props.startTime,
               endTime: props.endTime,
               weekDay: props.weekDay,
               userDisplayName: props.userDisplayName,
               showBookingHandler: true,
-            })
+            }),
+            props.setToggleUpdateDeleteBooking({
+              toggleUpdateDeleteBooking: true,
+            }))
           : null
       }
     >
@@ -56,10 +62,13 @@ const Booking = (props) => {
 
 const mapStateToProps = createStructuredSelector({
   selectedBooking: selectSelectedBooking,
+  toggleUpdateDeleteBooking: selectToggleUpdateDeleteBooking,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   setSelectedBooking: (booking) => dispatch(setSelectedBooking(booking)),
+  setToggleUpdateDeleteBooking: (booking) =>
+    dispatch(setToggleUpdateDeleteBooking(booking)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Booking);

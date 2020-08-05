@@ -1,4 +1,9 @@
 import React from 'react';
+
+import { connect } from 'react-redux';
+
+import { createStructuredSelector } from 'reselect';
+
 import './booking-form.styles.scss';
 
 import { createNewBooking } from '../../firebase/firebase.utils';
@@ -6,6 +11,9 @@ import { createNewBooking } from '../../firebase/firebase.utils';
 import { Button, Form } from 'semantic-ui-react';
 
 import timePickerItems from './timePickerIItems';
+
+import { setToggleNewBooking } from '../../redux/bookingforms/bookingforms.actions';
+import { selectToggleNewBooking } from '../../redux/bookingforms/bookingforms.selectors';
 
 const weekDays = [
   { key: '2', value: '2', text: 'Måndag' },
@@ -23,19 +31,22 @@ class BookingForm extends React.Component {
 
   handleChange = (e, { name, value }) => this.setState({ [name]: value });
 
-  handleSubmit = () => {
+  handleSubmit = async () => {
     const { weekDay, startTime, endTime } = this.state;
 
     const convertedStartTime = new Date('June 22, 2020 ' + startTime + ':00');
     const convertedEndTime = new Date('June 22, 2020 ' + endTime + ':00');
 
-    createNewBooking(
+    await createNewBooking(
       weekDay,
       convertedStartTime,
       convertedEndTime,
       this.props.currentUser,
       this.props.currentRoom
     );
+    this.props.setToggleNewBooking({
+      toggleNewBooking: false,
+    });
   };
 
   render() {
@@ -79,7 +90,10 @@ class BookingForm extends React.Component {
           />
           <Button.Group>
             <Button primary content="BOKA" type="submit" />
-            <Button onClick={this.props.onToggleForm()} content="STÄNG" />
+            <Button
+              onClick={this.props.onToggleNewBookingForm()}
+              content="STÄNG"
+            />
           </Button.Group>
         </Form>
       </div>
@@ -87,4 +101,12 @@ class BookingForm extends React.Component {
   }
 }
 
-export default BookingForm;
+const mapStateToProps = createStructuredSelector({
+  toggleNewBooking: selectToggleNewBooking,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  setToggleNewBooking: (bookingforms) =>
+    dispatch(setToggleNewBooking(bookingforms)),
+});
+export default connect(mapStateToProps, mapDispatchToProps)(BookingForm);

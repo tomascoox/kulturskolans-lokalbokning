@@ -11,9 +11,11 @@ import SignInAndSignupPage from './pages/sign-in-and-signup/sign-in-and-signup.c
 import Help from './pages/help/help.component';
 
 import { auth, createUserProfileDocument } from './firebase/firebase.utils';
+import { selectCurrentRoom } from './redux/user/user.selectors';
 import { setCurrentUser, setCurrentRoom } from './redux/user/user.actions';
 import { selectCurrentUser } from './redux/user/user.selectors';
-import { selectCurrentRoom } from './redux/user/user.selectors';
+import { setToggleNewBooking } from './redux/bookingforms/bookingforms.actions';
+import { selectToggleNewBooking } from './redux/bookingforms/bookingforms.selectors';
 
 import { fetchBookingsStartAsync } from './redux/schedule/schedule.actions';
 import { fetchRoomsStartAsync } from './redux/schedule/schedule.actions';
@@ -34,14 +36,15 @@ import { Menu } from 'semantic-ui-react';
 const HomePageWithSpinner = WithSpinner(HomePage);
 
 class App extends Component {
-  state = {
-    showNewBookingHandler: false,
+  toggleNewBookingForm = () => () => {
+    !this.props.toggleNewBooking
+      ? this.props.setToggleNewBooking({
+          toggleNewBooking: true,
+        })
+      : this.props.setToggleNewBooking({
+          toggleNewBooking: false,
+        });
   };
-
-  handleBookingHandler = () => () =>
-    this.setState((prevState) => ({
-      showNewBookingHandler: !prevState.showNewBookingHandler,
-    }));
 
   unsubscribeFromAuth = null;
 
@@ -76,16 +79,12 @@ class App extends Component {
   handleItemClick = (e, { name }) => this.setState({ activeItem: name });
 
   render() {
-    const { showNewBookingHandler } = this.state;
-
     const {
       activeItem,
       currentUser,
       currentRoom,
       isBookingsLoaded,
     } = this.props;
-
-    console.log(this.props.location.pathname);
 
     return (
       <Fragment>
@@ -103,7 +102,7 @@ class App extends Component {
             <Menu.Item
               name="newbooking"
               active={activeItem === 'newbooking'}
-              onClick={this.handleBookingHandler()}
+              onClick={this.toggleNewBookingForm()}
             >
               NY BOKNING
             </Menu.Item>
@@ -132,11 +131,11 @@ class App extends Component {
             <Menu.Item onClick={() => auth.signOut()}>LOGOUT</Menu.Item>
           )}
         </Menu>
-        {showNewBookingHandler ? (
+        {this.props.toggleNewBooking ? (
           <BookingForm
             currentUser={currentUser}
             currentRoom={currentRoom}
-            onToggleForm={this.handleBookingHandler}
+            onToggleNewBookingForm={this.toggleNewBookingForm}
           />
         ) : null}
         <Switch>
@@ -170,6 +169,7 @@ const mapStateToProps = createStructuredSelector({
   currentRoom: selectCurrentRoom,
   isBookingsLoaded: selectIsBookingsLoaded,
   isRoomsLoaded: selectIsRoomsLoaded,
+  toggleNewBooking: selectToggleNewBooking,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -177,5 +177,7 @@ const mapDispatchToProps = (dispatch) => ({
   setCurrentRoom: (room) => dispatch(setCurrentRoom(room)),
   fetchBookingsStartAsync: () => dispatch(fetchBookingsStartAsync()),
   fetchRoomsStartAsync: () => dispatch(fetchRoomsStartAsync()),
+  setToggleNewBooking: (bookingforms) =>
+    dispatch(setToggleNewBooking(bookingforms)),
 });
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));

@@ -13,7 +13,8 @@ import { fetchBookingsStartAsync } from '../../redux/schedule/schedule.actions';
 import { setSelectedBooking } from '../../redux/user/user.actions';
 import { selectSelectedBooking } from '../../redux/user/user.selectors';
 
-import _ from 'lodash';
+import { setToggleUpdateDeleteBooking } from '../../redux/bookingforms/bookingforms.actions';
+import { selectToggleUpdateDeleteBooking } from '../../redux/bookingforms/bookingforms.selectors';
 
 import Booking from '../booking/booking.component';
 
@@ -69,19 +70,25 @@ class Schedule extends React.Component {
       { key: '6', value: '6', text: 'Fredag' },
     ];
 
-    const handleDelete = () => {
+    const handleDelete = async () => {
       const { bookingID } = this.props.selectedBooking;
-      deleteBooking(bookingID);
+      await deleteBooking(bookingID);
+      this.props.setToggleUpdateDeleteBooking({
+        toggleUpdateDeleteBooking: false,
+      });
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
       const {
         bookingID,
         startTime,
         endTime,
         weekDay,
       } = this.props.selectedBooking;
-      updateBooking(bookingID, startTime, endTime, weekDay);
+      await updateBooking(bookingID, startTime, endTime, weekDay);
+      this.props.setToggleUpdateDeleteBooking({
+        toggleUpdateDeleteBooking: false,
+      });
     };
 
     const onChangeRoom = (event, data) => {
@@ -127,7 +134,6 @@ class Schedule extends React.Component {
             options={roomOptions}
             onChange={onChangeRoom}
             scrolling
-            search
           />
         </div>
 
@@ -196,15 +202,10 @@ class Schedule extends React.Component {
 
         {/* UPDATE/DELETE BOOKINGHANDLER */}
 
-        {showBookingHandler ? (
+        {this.props.toggleUpdateDeleteBooking ? (
           <div className="booking-container">
             <h2>ÄNDRA/RADERA BOKNING</h2>
-            <Form
-              onSubmit={handleSubmit}
-              size="large"
-              className="bookingForm"
-              unstackable
-            >
+            <Form size="large" className="bookingForm" unstackable>
               <Form.Select
                 name="weekDay"
                 value={selectedBooking.weekDay}
@@ -218,7 +219,6 @@ class Schedule extends React.Component {
                     endTime: selectedBooking.endTime,
                     weekDay: value,
                     userDisplayName: selectedBooking.userDisplayName,
-                    showBookingHandler: true,
                   })
                 }
               />
@@ -236,7 +236,6 @@ class Schedule extends React.Component {
                     endTime: selectedBooking.endTime,
                     weekDay: selectedBooking.weekDay,
                     userDisplayName: selectedBooking.userDisplayName,
-                    showBookingHandler: true,
                   })
                 }
               />
@@ -254,18 +253,17 @@ class Schedule extends React.Component {
                     endTime: convertTimeToDate(value),
                     weekDay: selectedBooking.weekDay,
                     userDisplayName: selectedBooking.userDisplayName,
-                    showBookingHandler: true,
                   })
                 }
               />
               <Button.Group size="small">
-                <Button primary content="ÄNDRA" type="submit" />
+                <Button primary content="ÄNDRA" onClick={handleSubmit} />
                 <Button color="red" content="RADERA" onClick={handleDelete} />
                 <Button
                   content="STÄNG"
                   onClick={() =>
-                    this.props.setSelectedBooking({
-                      showBookingHandler: false,
+                    this.props.setToggleUpdateDeleteBooking({
+                      toggleUpdateDeleteBooking: false,
                     })
                   }
                 />
@@ -284,12 +282,15 @@ const mapStateToProps = createStructuredSelector({
   bookings: selectBookings,
   rooms: selectRooms,
   selectedBooking: selectSelectedBooking,
+  toggleUpdateDeleteBooking: selectToggleUpdateDeleteBooking,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   setCurrentRoom: (room) => dispatch(setCurrentRoom(room)),
   fetchBookingsStartAsync: () => dispatch(fetchBookingsStartAsync()),
   setSelectedBooking: (booking) => dispatch(setSelectedBooking(booking)),
+  setToggleUpdateDeleteBooking: (bookingforms) =>
+    dispatch(setToggleUpdateDeleteBooking(bookingforms)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Schedule);
