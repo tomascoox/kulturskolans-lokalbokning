@@ -25,6 +25,21 @@ import timePickerItems from './timePickerIItems';
 
 import './schedule.styles.scss';
 
+const weekDays = [
+  { key: '2', value: '2', text: 'Måndag' },
+  { key: '3', value: '3', text: 'Tisdag' },
+  { key: '4', value: '4', text: 'Onsdag' },
+  { key: '5', value: '5', text: 'Torsdag' },
+  { key: '6', value: '6', text: 'Fredag' },
+];
+
+const convertFirebaseTimestampToDate = (timeStamp) => {
+  let firebaseSeconds = timeStamp.seconds;
+  let firebasenanoseconds = timeStamp.nanoseconds;
+  let date = new Date(firebaseSeconds * 1000 + firebasenanoseconds / 1000000);
+  return date;
+};
+
 class Schedule extends React.Component {
   render() {
     const {
@@ -35,8 +50,6 @@ class Schedule extends React.Component {
       setCurrentRoom,
       currentUser,
     } = this.props;
-
-    const { showBookingHandler } = selectedBooking;
 
     function sortOptions(a, b) {
       if (a.text < b.text) {
@@ -62,20 +75,16 @@ class Schedule extends React.Component {
 
     roomOptions.sort(sortOptions);
 
-    const weekDays = [
-      { key: '2', value: '2', text: 'Måndag' },
-      { key: '3', value: '3', text: 'Tisdag' },
-      { key: '4', value: '4', text: 'Onsdag' },
-      { key: '5', value: '5', text: 'Torsdag' },
-      { key: '6', value: '6', text: 'Fredag' },
-    ];
-
     const handleDelete = async () => {
       const { bookingID } = this.props.selectedBooking;
       await deleteBooking(bookingID);
       this.props.setToggleUpdateDeleteBooking({
         toggleUpdateDeleteBooking: false,
       });
+    };
+
+    const someFunction = () => {
+      console.log('Some function');
     };
 
     const handleSubmit = async () => {
@@ -85,7 +94,67 @@ class Schedule extends React.Component {
         endTime,
         weekDay,
       } = this.props.selectedBooking;
-      await updateBooking(bookingID, startTime, endTime, weekDay);
+
+      // START CHECK ALREADY BOOKED
+      let timeListUpdate = [];
+
+      function getDateUpdate(clock) {
+        let workDateUpdate = new Date('June 22, 2020 00:00:00');
+        let _t = clock.split(':');
+        workDateUpdate.setHours(_t[0], _t[1], 0, 0);
+        return workDateUpdate;
+      }
+
+      function validateUpdate(sTime, eTime) {
+        if (timeListUpdate.length === 0) return true;
+        let notOccupied = true;
+        timeListUpdate.forEach(({ startTime, endTime }) => {
+          let startTimeToDate = getDateUpdate(startTime);
+          let startTimePlusOneMin = new Date(startTimeToDate.getTime() + 60000);
+          let endTimeToDate = getDateUpdate(endTime);
+          let endTimeMinusOneMin = new Date(endTimeToDate.getTime() - 60000);
+
+          if (sTime > startTimePlusOneMin && sTime < endTimeMinusOneMin) {
+            notOccupied = false;
+          } else if (
+            eTime > startTimePlusOneMin &&
+            eTime < endTimeMinusOneMin
+          ) {
+            notOccupied = false;
+          } else {
+            console.log('This booking does not conflict with the new booking');
+          }
+        });
+
+        return notOccupied;
+      }
+
+      Object.values(this.props.bookings)
+        .filter(
+          (booking) =>
+            booking.roomID === this.props.currentRoom.id &&
+            booking.weekDay === weekDay
+        )
+        .map(({ startTime, endTime }) =>
+          timeListUpdate.push({
+            startTime: convertFirebaseTimestampToDate(startTime)
+              .toTimeString()
+              .slice(0, 5),
+            endTime: convertFirebaseTimestampToDate(endTime)
+              .toTimeString()
+              .slice(0, 5),
+          })
+        );
+      console.log(startTime);
+
+      if (validateUpdate(startTime, endTime)) {
+        await updateBooking(bookingID, startTime, endTime, weekDay);
+      } else {
+        alert('Tid redan bokad! Välj ny!');
+      }
+
+      // END CHECK ALREADY BOOKED
+
       this.props.setToggleUpdateDeleteBooking({
         toggleUpdateDeleteBooking: false,
       });
@@ -105,15 +174,6 @@ class Schedule extends React.Component {
       };
 
       setCurrentRoom(newCurrentRoom);
-    };
-
-    const convertFirebaseTimestampToDate = (timeStamp) => {
-      let firebaseSeconds = timeStamp.seconds;
-      let firebasenanoseconds = timeStamp.nanoseconds;
-      let date = new Date(
-        firebaseSeconds * 1000 + firebasenanoseconds / 1000000
-      );
-      return date;
     };
 
     const convertTimeToDate = (value) => {
