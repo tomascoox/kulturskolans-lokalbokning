@@ -6,10 +6,7 @@ const Help = () => (
   <div className="help">
     <h1>INSTRUKTIONER</h1>
     <h2>Visa en lokals bokningar</h2>
-    <p>
-      Tryck på vald lokals namn och välj ny i menyn. Du kan även söka genom att
-      skriva första bokstaven eller fler på den skola lokalen är på.
-    </p>
+    <p>Tryck på vald lokals namn och välj ny i menyn.</p>
     <h2>Lägga in ny bokning</h2>
     <p>
       Se till att du är inloggad med ditt konto (be Tomas om uppgifter). Gå sen

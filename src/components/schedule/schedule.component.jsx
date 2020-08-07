@@ -51,6 +51,10 @@ class Schedule extends React.Component {
       currentUser,
     } = this.props;
 
+    // const { userID } = currentUser;
+
+    const currentUserID = currentUser ? currentUser.id : null;
+
     function sortOptions(a, b) {
       if (a.text < b.text) {
         return -1;
@@ -83,11 +87,8 @@ class Schedule extends React.Component {
       });
     };
 
-    const someFunction = () => {
-      console.log('Some function');
-    };
-
     const handleSubmit = async () => {
+      let occupied = false;
       const {
         bookingID,
         startTime,
@@ -106,27 +107,26 @@ class Schedule extends React.Component {
       }
 
       function validateUpdate(sTime, eTime) {
-        if (timeListUpdate.length === 0) return true;
-        let notOccupied = true;
-        timeListUpdate.forEach(({ startTime, endTime }) => {
+        if (timeListUpdate.length === 0) occupied = false;
+
+        timeListUpdate.forEach(({ userID, startTime, endTime }) => {
           let startTimeToDate = getDateUpdate(startTime);
           let startTimePlusOneMin = new Date(startTimeToDate.getTime() + 60000);
           let endTimeToDate = getDateUpdate(endTime);
           let endTimeMinusOneMin = new Date(endTimeToDate.getTime() - 60000);
 
           if (sTime > startTimePlusOneMin && sTime < endTimeMinusOneMin) {
-            notOccupied = false;
-          } else if (
-            eTime > startTimePlusOneMin &&
-            eTime < endTimeMinusOneMin
-          ) {
-            notOccupied = false;
-          } else {
-            console.log('This booking does not conflict with the new booking');
+            occupied = true;
+          }
+          if (eTime > startTimePlusOneMin && eTime < endTimeMinusOneMin) {
+            occupied = true;
+          }
+          if (currentUserID === userID) {
+            occupied = false;
           }
         });
 
-        return notOccupied;
+        return occupied;
       }
 
       Object.values(this.props.bookings)
@@ -135,8 +135,9 @@ class Schedule extends React.Component {
             booking.roomID === this.props.currentRoom.id &&
             booking.weekDay === weekDay
         )
-        .map(({ startTime, endTime }) =>
+        .map(({ startTime, endTime, userID }) =>
           timeListUpdate.push({
+            userID: userID,
             startTime: convertFirebaseTimestampToDate(startTime)
               .toTimeString()
               .slice(0, 5),
@@ -145,9 +146,8 @@ class Schedule extends React.Component {
               .slice(0, 5),
           })
         );
-      console.log(startTime);
 
-      if (validateUpdate(startTime, endTime)) {
+      if (!validateUpdate(startTime, endTime, currentUserID)) {
         await updateBooking(bookingID, startTime, endTime, weekDay);
       } else {
         alert('Tid redan bokad! Välj ny!');
