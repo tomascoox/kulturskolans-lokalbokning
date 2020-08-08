@@ -18,12 +18,14 @@ import { selectToggleUpdateDeleteBooking } from '../../redux/bookingforms/bookin
 
 import Booking from '../booking/booking.component';
 
-import { deleteBooking, updateBooking } from '../../firebase/firebase.utils';
-
-import { Dropdown, Button, Form } from 'semantic-ui-react';
+import { Dropdown, Button, Form, Confirm } from 'semantic-ui-react';
 import timePickerItems from './timePickerIItems';
 
 import './schedule.styles.scss';
+
+import { deleteBooking, updateBooking } from '../../firebase/firebase.utils';
+import { checkIfOccupied } from '../../utility-functions';
+import { convertFirebaseTimestampToDate } from '../../utility-functions';
 
 const weekDays = [
   { key: '2', value: '2', text: 'Måndag' },
@@ -33,14 +35,9 @@ const weekDays = [
   { key: '6', value: '6', text: 'Fredag' },
 ];
 
-const convertFirebaseTimestampToDate = (timeStamp) => {
-  let firebaseSeconds = timeStamp.seconds;
-  let firebasenanoseconds = timeStamp.nanoseconds;
-  let date = new Date(firebaseSeconds * 1000 + firebasenanoseconds / 1000000);
-  return date;
-};
-
 class Schedule extends React.Component {
+  state = { occupiedConfirm: false };
+
   render() {
     const {
       selectedBooking,
@@ -51,7 +48,16 @@ class Schedule extends React.Component {
       currentUser,
     } = this.props;
 
-    // const { userID } = currentUser;
+    const openOccupiedConfirm = () => this.setState({ occupiedConfirm: true });
+    const closeOccupiedConfirmTryAgain = () => {
+      this.setState({ occupiedConfirm: false });
+    };
+    const closeOccupiedConfirm = () => {
+      this.setState({ occupiedConfirm: false });
+      this.props.setToggleUpdateDeleteBooking({
+        toggleUpdateDeleteBooking: false,
+      });
+    };
 
     const currentUserID = currentUser ? currentUser.id : null;
 
@@ -88,7 +94,6 @@ class Schedule extends React.Component {
     };
 
     const handleSubmit = async () => {
-      let occupied = false;
       const {
         bookingID,
         startTime,
@@ -96,38 +101,7 @@ class Schedule extends React.Component {
         weekDay,
       } = this.props.selectedBooking;
 
-      // START CHECK ALREADY BOOKED
-      let timeListUpdate = [];
-
-      function getDateUpdate(clock) {
-        let workDateUpdate = new Date('June 22, 2020 00:00:00');
-        let _t = clock.split(':');
-        workDateUpdate.setHours(_t[0], _t[1], 0, 0);
-        return workDateUpdate;
-      }
-
-      function validateUpdate(sTime, eTime) {
-        if (timeListUpdate.length === 0) occupied = false;
-
-        timeListUpdate.forEach(({ userID, startTime, endTime }) => {
-          let startTimeToDate = getDateUpdate(startTime);
-          let startTimePlusOneMin = new Date(startTimeToDate.getTime() + 60000);
-          let endTimeToDate = getDateUpdate(endTime);
-          let endTimeMinusOneMin = new Date(endTimeToDate.getTime() - 60000);
-
-          if (sTime > startTimePlusOneMin && sTime < endTimeMinusOneMin) {
-            occupied = true;
-          }
-          if (eTime > startTimePlusOneMin && eTime < endTimeMinusOneMin) {
-            occupied = true;
-          }
-          if (currentUserID === userID) {
-            occupied = false;
-          }
-        });
-
-        return occupied;
-      }
+      let timeList = [];
 
       Object.values(this.props.bookings)
         .filter(
@@ -136,7 +110,7 @@ class Schedule extends React.Component {
             booking.weekDay === weekDay
         )
         .map(({ startTime, endTime, userID }) =>
-          timeListUpdate.push({
+          timeList.push({
             userID: userID,
             startTime: convertFirebaseTimestampToDate(startTime)
               .toTimeString()
@@ -147,17 +121,14 @@ class Schedule extends React.Component {
           })
         );
 
-      if (!validateUpdate(startTime, endTime, currentUserID)) {
+      if (!checkIfOccupied(startTime, endTime, timeList, currentUserID)) {
         await updateBooking(bookingID, startTime, endTime, weekDay);
+        this.props.setToggleUpdateDeleteBooking({
+          toggleUpdateDeleteBooking: false,
+        });
       } else {
-        alert('Tid redan bokad! Välj ny!');
+        openOccupiedConfirm();
       }
-
-      // END CHECK ALREADY BOOKED
-
-      this.props.setToggleUpdateDeleteBooking({
-        toggleUpdateDeleteBooking: false,
-      });
     };
 
     const onChangeRoom = (event, data) => {
@@ -187,6 +158,16 @@ class Schedule extends React.Component {
 
     return (
       <Fragment>
+        <Confirm
+          open={this.state.occupiedConfirm}
+          header="Jeeez, sån otur!"
+          content="Tiden är redan bokad. Välj en ny!"
+          onCancel={closeOccupiedConfirm}
+          cancelButton="Naa, struntar i det tillsvidare!"
+          onConfirm={closeOccupiedConfirmTryAgain}
+          confirmButton="Let's do it!"
+        />
+
         <div className="chooser-container">
           <Dropdown
             inline

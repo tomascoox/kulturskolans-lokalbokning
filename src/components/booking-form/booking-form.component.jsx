@@ -15,6 +15,11 @@ import timePickerItems from './timePickerIItems';
 import { setToggleNewBooking } from '../../redux/bookingforms/bookingforms.actions';
 import { selectToggleNewBooking } from '../../redux/bookingforms/bookingforms.selectors';
 import { selectBookings } from '../../redux/schedule/schedule.selectors';
+import { selectCurrentUser } from '../../redux/user/user.selectors';
+
+import { checkIfOccupied } from '../../utility-functions';
+import { getDate } from '../../utility-functions';
+import { convertFirebaseTimestampToDate } from '../../utility-functions';
 
 const weekDays = [
   { key: '2', value: '2', text: 'Måndag' },
@@ -23,14 +28,6 @@ const weekDays = [
   { key: '5', value: '5', text: 'Torsdag' },
   { key: '6', value: '6', text: 'Fredag' },
 ];
-
-const convertFirebaseTimestampToDate = (timeStamp) => {
-  let firebaseSeconds = timeStamp.seconds;
-  let firebasenanoseconds = timeStamp.nanoseconds;
-  let date = new Date(firebaseSeconds * 1000 + firebasenanoseconds / 1000000);
-  return date;
-};
-
 class BookingForm extends React.Component {
   state = {
     startTime: '',
@@ -42,42 +39,11 @@ class BookingForm extends React.Component {
   handleSubmit = async () => {
     const { weekDay, startTime, endTime } = this.state;
 
-    // START CHECK ALREADY BOOKED
+    const currentUserID = this.props.currentUser
+      ? this.props.currentUser.id
+      : null;
+
     let timeList = [];
-
-    function getDate(time) {
-      let workDate = new Date('June 22, 2020 00:00:00');
-      let _t = time.split(':');
-      workDate.setHours(_t[0], _t[1], 0, 0);
-      return workDate;
-    }
-
-    function validate(sTime, eTime) {
-      if (timeList.length === 0) return true;
-      let occupied = true;
-      timeList.forEach(({ startTime, endTime }) => {
-        let startTimeToDate = getDate(startTime);
-        let startTimePlusOneMin = new Date(startTimeToDate.getTime() + 60000);
-        let endTimeToDate = getDate(endTime);
-        let endTimeMinusOneMin = new Date(endTimeToDate.getTime() - 60000);
-
-        if (
-          getDate(sTime) > startTimePlusOneMin &&
-          getDate(sTime) < endTimeMinusOneMin
-        ) {
-          occupied = false;
-        } else if (
-          getDate(eTime) > startTimePlusOneMin &&
-          getDate(eTime) < endTimeMinusOneMin
-        ) {
-          occupied = false;
-        } else {
-          console.log('This booking does not conflict with the new booking');
-        }
-      });
-
-      return occupied;
-    }
 
     Object.values(this.props.bookings)
       .filter(
@@ -96,7 +62,14 @@ class BookingForm extends React.Component {
         })
       );
 
-    if (validate(startTime, endTime)) {
+    if (
+      !checkIfOccupied(
+        getDate(startTime),
+        getDate(endTime),
+        timeList,
+        currentUserID
+      )
+    ) {
       const convertedStartTime = new Date('June 22, 2020 ' + startTime + ':00');
       const convertedEndTime = new Date('June 22, 2020 ' + endTime + ':00');
 
@@ -110,8 +83,6 @@ class BookingForm extends React.Component {
     } else {
       alert('Tid redan bokad! Välj ny!');
     }
-
-    // END CHECK ALREADY BOOKED
 
     this.props.setToggleNewBooking({
       toggleNewBooking: false,
@@ -172,6 +143,7 @@ class BookingForm extends React.Component {
 const mapStateToProps = createStructuredSelector({
   toggleNewBooking: selectToggleNewBooking,
   bookings: selectBookings,
+  currentUser: selectCurrentUser,
 });
 
 const mapDispatchToProps = (dispatch) => ({
