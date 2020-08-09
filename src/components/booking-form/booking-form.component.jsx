@@ -8,7 +8,7 @@ import './booking-form.styles.scss';
 
 import { createNewBooking } from '../../firebase/firebase.utils';
 
-import { Button, Form } from 'semantic-ui-react';
+import { Button, Form, Confirm } from 'semantic-ui-react';
 
 import timePickerItems from './timePickerIItems';
 
@@ -16,6 +16,7 @@ import { setToggleNewBooking } from '../../redux/bookingforms/bookingforms.actio
 import { selectToggleNewBooking } from '../../redux/bookingforms/bookingforms.selectors';
 import { selectBookings } from '../../redux/schedule/schedule.selectors';
 import { selectCurrentUser } from '../../redux/user/user.selectors';
+import { selectSelectedBooking } from '../../redux/user/user.selectors';
 
 import { checkIfOccupied } from '../../utility-functions';
 import { getDate } from '../../utility-functions';
@@ -32,71 +33,96 @@ class BookingForm extends React.Component {
   state = {
     startTime: '',
     endTime: '',
-  };
-
-  handleChange = (e, { name, value }) => this.setState({ [name]: value });
-
-  handleSubmit = async () => {
-    const { weekDay, startTime, endTime } = this.state;
-
-    const currentUserID = this.props.currentUser
-      ? this.props.currentUser.id
-      : null;
-
-    let timeList = [];
-
-    Object.values(this.props.bookings)
-      .filter(
-        (booking) =>
-          booking.roomID === this.props.currentRoom.id &&
-          booking.weekDay === weekDay
-      )
-      .map(({ startTime, endTime }) =>
-        timeList.push({
-          startTime: convertFirebaseTimestampToDate(startTime)
-            .toTimeString()
-            .slice(0, 5),
-          endTime: convertFirebaseTimestampToDate(endTime)
-            .toTimeString()
-            .slice(0, 5),
-        })
-      );
-
-    if (
-      !checkIfOccupied(
-        getDate(startTime),
-        getDate(endTime),
-        timeList,
-        currentUserID
-      )
-    ) {
-      const convertedStartTime = new Date('June 22, 2020 ' + startTime + ':00');
-      const convertedEndTime = new Date('June 22, 2020 ' + endTime + ':00');
-
-      await createNewBooking(
-        weekDay,
-        convertedStartTime,
-        convertedEndTime,
-        this.props.currentUser,
-        this.props.currentRoom
-      );
-    } else {
-      alert('Tid redan bokad! Välj ny!');
-    }
-
-    this.props.setToggleNewBooking({
-      toggleNewBooking: false,
-    });
+    occupiedConfirm: false,
   };
 
   render() {
     const { weekDay, startTime, endTime } = this.state;
 
+    const openOccupiedConfirm = () => this.setState({ occupiedConfirm: true });
+
+    const closeOccupiedConfirmTryAgain = () => {
+      this.setState({ ...this.state, occupiedConfirm: false });
+    };
+    const closeOccupiedConfirm = () => {
+      this.setState({ ...this.state, occupiedConfirm: false });
+      this.props.setToggleNewBooking({
+        toggleNewBooking: false,
+      });
+    };
+
+    const handleChange = (e, { name, value }) =>
+      this.setState({ [name]: value });
+
+    const handleSubmit = async () => {
+      const { weekDay, startTime, endTime } = this.state;
+
+      const currentUserID = this.props.currentUser
+        ? this.props.currentUser.id
+        : null;
+
+      let timeList = [];
+
+      Object.values(this.props.bookings)
+        .filter(
+          (booking) =>
+            booking.roomID === this.props.currentRoom.id &&
+            booking.weekDay === weekDay
+        )
+        .map(({ startTime, endTime, userID, id }) =>
+          timeList.push({
+            userID: userID,
+            bookingID: id,
+            startTime: convertFirebaseTimestampToDate(startTime)
+              .toTimeString()
+              .slice(0, 5),
+            endTime: convertFirebaseTimestampToDate(endTime)
+              .toTimeString()
+              .slice(0, 5),
+          })
+        );
+      if (
+        !checkIfOccupied(
+          getDate(startTime),
+          getDate(endTime),
+          timeList,
+          this.props.selectedBooking
+        )
+      ) {
+        const convertedStartTime = new Date(
+          'June 22, 2020 ' + startTime + ':00'
+        );
+        const convertedEndTime = new Date('June 22, 2020 ' + endTime + ':00');
+
+        await createNewBooking(
+          weekDay,
+          convertedStartTime,
+          convertedEndTime,
+          this.props.currentUser,
+          this.props.currentRoom
+        );
+        this.props.setToggleNewBooking({
+          toggleNewBooking: false,
+        });
+      } else {
+        openOccupiedConfirm();
+      }
+    };
+
     return (
       <div className="booking-container">
+        <Confirm
+          open={this.state.occupiedConfirm}
+          header="Jeeez, sån otur!"
+          content="Tiden är redan bokad. Välj en ny!"
+          onCancel={closeOccupiedConfirm}
+          cancelButton="Naa, struntar i det tillsvidare!"
+          onConfirm={closeOccupiedConfirmTryAgain}
+          confirmButton="Let's do it!"
+        />
         <h2>NY BOKNING</h2>
         <Form
-          onSubmit={this.handleSubmit}
+          onSubmit={handleSubmit}
           size="large"
           className="bookingForm"
           unstackable
@@ -107,7 +133,7 @@ class BookingForm extends React.Component {
             label="Veckodag"
             placeholder="Välj veckodag"
             options={weekDays}
-            onChange={this.handleChange}
+            onChange={handleChange}
           />
           <Form.Select
             type="time"
@@ -116,7 +142,7 @@ class BookingForm extends React.Component {
             label="Start-tid"
             placeholder="Välj start-tid"
             options={timePickerItems}
-            onChange={this.handleChange}
+            onChange={handleChange}
           />
           <Form.Select
             type="time"
@@ -125,12 +151,16 @@ class BookingForm extends React.Component {
             label="Slut-tid"
             placeholder="Välj slut-tid"
             options={timePickerItems}
-            onChange={this.handleChange}
+            onChange={handleChange}
           />
           <Button.Group>
             <Button primary content="BOKA" type="submit" />
             <Button
-              onClick={this.props.onToggleNewBookingForm()}
+              onClick={() =>
+                this.props.setToggleNewBooking({
+                  toggleNewBooking: false,
+                })
+              }
               content="STÄNG"
             />
           </Button.Group>
@@ -144,6 +174,7 @@ const mapStateToProps = createStructuredSelector({
   toggleNewBooking: selectToggleNewBooking,
   bookings: selectBookings,
   currentUser: selectCurrentUser,
+  selectedBooking: selectSelectedBooking,
 });
 
 const mapDispatchToProps = (dispatch) => ({

@@ -36,16 +36,6 @@ import { Menu } from 'semantic-ui-react';
 const HomePageWithSpinner = WithSpinner(HomePage);
 
 class App extends Component {
-  toggleNewBookingForm = () => () => {
-    !this.props.toggleNewBooking
-      ? this.props.setToggleNewBooking({
-          toggleNewBooking: true,
-        })
-      : this.props.setToggleNewBooking({
-          toggleNewBooking: false,
-        });
-  };
-
   unsubscribeFromAuth = null;
 
   componentDidMount() {
@@ -86,6 +76,16 @@ class App extends Component {
       isBookingsLoaded,
     } = this.props;
 
+    const localToggleNewBookingForm = () => {
+      !this.props.toggleNewBooking
+        ? this.props.setToggleNewBooking({
+            toggleNewBooking: true,
+          })
+        : this.props.setToggleNewBooking({
+            toggleNewBooking: false,
+          });
+    };
+
     return (
       <Fragment>
         <Menu inverted compact fluid>
@@ -102,7 +102,7 @@ class App extends Component {
             <Menu.Item
               name="newbooking"
               active={activeItem === 'newbooking'}
-              onClick={this.toggleNewBookingForm()}
+              onClick={() => localToggleNewBookingForm()}
             >
               NY BOKNING
             </Menu.Item>
@@ -132,11 +132,7 @@ class App extends Component {
           )}
         </Menu>
         {this.props.toggleNewBooking ? (
-          <BookingForm
-            currentUser={currentUser}
-            currentRoom={currentRoom}
-            onToggleNewBookingForm={this.toggleNewBookingForm}
-          />
+          <BookingForm currentUser={currentUser} currentRoom={currentRoom} />
         ) : null}
         <Switch>
           <Route

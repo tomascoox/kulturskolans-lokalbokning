@@ -1,16 +1,16 @@
-export const checkIfOccupied = (sTime, eTime, timeList, currentUserID) => {
+export const checkIfOccupied = (sTime, eTime, timeList, selectedBooking) => {
   let occupied = false;
 
   if (timeList.length === 0) occupied = false;
 
-  timeList.forEach(({ userID, startTime, endTime }) => {
+  timeList.forEach(({ startTime, endTime, bookingID }) => {
     let startTimeToDate = getDate(startTime);
     let startTimePlusOneMin = new Date(startTimeToDate.getTime() + 60000);
     let endTimeToDate = getDate(endTime);
     let endTimeMinusOneMin = new Date(endTimeToDate.getTime() - 60000);
 
-    // skip checks if booking is owned by user
-    if (currentUserID !== userID) {
+    // skip checks if booking is the booking which are changed
+    if (selectedBooking.bookingID !== bookingID) {
       // new booking inside booked item
       if (
         sTime > startTimePlusOneMin &&

@@ -49,6 +49,7 @@ class Schedule extends React.Component {
     } = this.props;
 
     const openOccupiedConfirm = () => this.setState({ occupiedConfirm: true });
+
     const closeOccupiedConfirmTryAgain = () => {
       this.setState({ occupiedConfirm: false });
     };
@@ -109,9 +110,10 @@ class Schedule extends React.Component {
             booking.roomID === this.props.currentRoom.id &&
             booking.weekDay === weekDay
         )
-        .map(({ startTime, endTime, userID }) =>
+        .map(({ startTime, endTime, userID, id }) =>
           timeList.push({
             userID: userID,
+            bookingID: id,
             startTime: convertFirebaseTimestampToDate(startTime)
               .toTimeString()
               .slice(0, 5),
@@ -121,7 +123,7 @@ class Schedule extends React.Component {
           })
         );
 
-      if (!checkIfOccupied(startTime, endTime, timeList, currentUserID)) {
+      if (!checkIfOccupied(startTime, endTime, timeList, selectedBooking)) {
         await updateBooking(bookingID, startTime, endTime, weekDay);
         this.props.setToggleUpdateDeleteBooking({
           toggleUpdateDeleteBooking: false,
