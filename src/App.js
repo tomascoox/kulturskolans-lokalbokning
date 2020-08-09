@@ -20,6 +20,8 @@ import { selectToggleNewBooking } from './redux/bookingforms/bookingforms.select
 import { fetchBookingsStartAsync } from './redux/schedule/schedule.actions';
 import { fetchRoomsStartAsync } from './redux/schedule/schedule.actions';
 
+import Footer from './components/footer/footer.component';
+
 import {
   selectIsBookingsLoaded,
   selectIsRoomsLoaded,
@@ -96,7 +98,7 @@ class App extends Component {
             active={activeItem === 'schema'}
             onClick={this.handleItemClick}
           >
-            VISA SCHEMAN
+            SCHEMA
           </Menu.Item>
           {this.props.currentUser && this.props.location.pathname === '/' ? (
             <Menu.Item
@@ -155,6 +157,7 @@ class App extends Component {
           />
           <Route exact path="/help" component={Help} />
         </Switch>
+        <Footer />
       </Fragment>
     );
   }
