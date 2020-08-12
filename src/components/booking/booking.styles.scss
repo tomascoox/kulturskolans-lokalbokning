@@ -14,7 +14,8 @@
 
 .booked-item-container .start-time {
   font-size: 1.3vh;
-  line-height: 1vh;
+  margin-top: 0.4em;
+  line-height: 0;
   grid-column: 1;
   grid-row: 1;
   justify-self: start;
@@ -34,8 +35,9 @@
 }
 
 .booked-item-container .end-time {
+  margin-bottom: 0.4em;
   font-size: 1.3vh;
-  line-height: 1vh;
+  line-height: 0;
   grid-column: 3;
   grid-row: 3;
   justify-self: end;
