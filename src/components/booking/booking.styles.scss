@@ -24,12 +24,13 @@
 
 .booked-item-container .item-info {
   font-size: 1.4vh;
-  line-height: 0;
+  line-height: 0.9;
   font-weight: 700;
-  grid-column: 2;
+  grid-column: 1/4;
   grid-row: 2;
   justify-self: center;
   align-self: center;
+  text-align: center;
 }
 
 .booked-item-container .end-time {

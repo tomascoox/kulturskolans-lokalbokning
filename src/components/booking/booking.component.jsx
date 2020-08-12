@@ -51,7 +51,11 @@ const Booking = (props) => {
         <div className="start-time">
           {props.startTime.toTimeString().slice(0, 5)}
         </div>
-        <div className="item-info">{props.userDisplayName}</div>
+        {props.type === 'booking' ? (
+          <div className="item-info">{props.userDisplayName}</div>
+        ) : (
+          <div className="item-info">{props.roomTitle}</div>
+        )}
         <div className="end-time">
           {props.endTime.toTimeString().slice(0, 5)}
         </div>

@@ -21,7 +21,7 @@ import Booking from '../booking/booking.component';
 import { Dropdown, Button, Form, Confirm } from 'semantic-ui-react';
 import timePickerItems from './timePickerIItems';
 
-import './schedule.styles.scss';
+import './my-schedule.styles.scss';
 
 import { deleteBooking, updateBooking } from '../../firebase/firebase.utils';
 import { checkIfOccupied } from '../../utility-functions';
@@ -61,6 +61,7 @@ class Schedule extends React.Component {
     };
 
     const currentUserID = currentUser ? currentUser.id : null;
+    const currentUserDisplayName = currentUser ? currentUser.displayName : null;
 
     function sortOptions(a, b) {
       if (a.text < b.text) {
@@ -169,15 +170,7 @@ class Schedule extends React.Component {
           onConfirm={closeOccupiedConfirmTryAgain}
           confirmButton="Let's do it!"
         />
-        <div className="chooser-container">
-          <Dropdown
-            inline
-            defaultValue={defaultRoom}
-            options={roomOptions}
-            onChange={onChangeRoom}
-            scrolling
-          />
-        </div>
+        <div className="chooser-container">Mina bokningar</div>
 
         <div className="weekdays-container">
           <div className="week-label monday">MÅNDAG</div>
@@ -213,9 +206,9 @@ class Schedule extends React.Component {
           <div className="time-legend time-1900">19:00</div>
           <div className="time-divider-2000"></div>
           <div className="time-legend time-2000">20:00</div>
-          {bookings && currentRoom
+          {bookings
             ? Object.values(bookings)
-                .filter((booking) => booking.roomID === currentRoom.id)
+                .filter((booking) => booking.userID === currentUserID)
                 .map(
                   ({
                     id,
@@ -225,6 +218,7 @@ class Schedule extends React.Component {
                     userID,
                     userDisplayName,
                     weekDay,
+                    roomTitle,
                   }) => (
                     <Booking
                       key={id}
@@ -235,8 +229,9 @@ class Schedule extends React.Component {
                       userID={userID}
                       userDisplayName={userDisplayName}
                       weekDay={weekDay}
+                      roomTitle={roomTitle}
                       currentUser={currentUser}
-                      type="booking"
+                      type="my-schedule"
                     />
                   )
                 )

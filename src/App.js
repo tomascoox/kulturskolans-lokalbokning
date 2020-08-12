@@ -8,6 +8,7 @@ import './App.css';
 
 import HomePage from './pages/homepage/homepage.component';
 import SignInAndSignupPage from './pages/sign-in-and-signup/sign-in-and-signup.component';
+import MySchedulePage from './pages/my-schedule-page/my-schedule-page.component';
 import Help from './pages/help/help.component';
 
 import { auth, createUserProfileDocument } from './firebase/firebase.utils';
@@ -90,7 +91,7 @@ class App extends Component {
 
     return (
       <Fragment>
-        <Menu inverted compact fluid>
+        <Menu inverted compact fluid fixed="top" size="tiny">
           <Menu.Item
             as="a"
             href="/"
@@ -98,7 +99,7 @@ class App extends Component {
             active={activeItem === 'schema'}
             onClick={this.handleItemClick}
           >
-            SCHEMA
+            LOKALER
           </Menu.Item>
           {this.props.currentUser && this.props.location.pathname === '/' ? (
             <Menu.Item
@@ -106,7 +107,21 @@ class App extends Component {
               active={activeItem === 'newbooking'}
               onClick={() => localToggleNewBookingForm()}
             >
-              NY BOKNING
+              BOKA
+            </Menu.Item>
+          ) : null}
+          {(this.props.currentUser &&
+            this.props.location.pathname === '/my-schedule') ||
+          (this.props.currentUser && this.props.location.pathname === '/') ||
+          (this.props.currentUser &&
+            this.props.location.pathname === '/help') ? (
+            <Menu.Item
+              as="a"
+              href="/my-schedule"
+              name="my-schedule"
+              active={activeItem === 'my-schedule'}
+            >
+              MINA BOKNINGAR
             </Menu.Item>
           ) : null}
           <Menu.Item
@@ -133,9 +148,6 @@ class App extends Component {
             <Menu.Item onClick={() => auth.signOut()}>LOGOUT</Menu.Item>
           )}
         </Menu>
-        {this.props.toggleNewBooking ? (
-          <BookingForm currentUser={currentUser} currentRoom={currentRoom} />
-        ) : null}
         <Switch>
           <Route
             exact
@@ -144,6 +156,7 @@ class App extends Component {
               <HomePageWithSpinner isLoading={!isBookingsLoaded} {...props} />
             )}
           />
+
           <Route
             exact
             path="/signin"
@@ -156,8 +169,12 @@ class App extends Component {
             }
           />
           <Route exact path="/help" component={Help} />
+          <Route exact path="/my-schedule" component={MySchedulePage} />
         </Switch>
         <Footer />
+        {this.props.toggleNewBooking ? (
+          <BookingForm currentUser={currentUser} currentRoom={currentRoom} />
+        ) : null}
       </Fragment>
     );
   }
