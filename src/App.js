@@ -99,7 +99,7 @@ class App extends Component {
             active={activeItem === 'schema'}
             onClick={this.handleItemClick}
           >
-            LOKALER
+            LOKALSCHEMAN
           </Menu.Item>
           {this.props.currentUser && this.props.location.pathname === '/' ? (
             <Menu.Item
@@ -121,7 +121,7 @@ class App extends Component {
               name="my-schedule"
               active={activeItem === 'my-schedule'}
             >
-              MINA BOKNINGAR
+              MITT SCHEMA
             </Menu.Item>
           ) : null}
           <Menu.Item
