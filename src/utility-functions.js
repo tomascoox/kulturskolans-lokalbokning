@@ -1,3 +1,32 @@
+export const createTimeList = (
+  bookings,
+  currentRoom,
+  selectedBooking,
+  type
+) => {
+  let timeList = [];
+  Object.values(bookings)
+    .filter(
+      (booking) =>
+        booking.roomID === currentRoom.id &&
+        booking.weekDay === selectedBooking.weekDay
+    )
+    .map(({ startTime, endTime, userID, roomID, id }) =>
+      timeList.push({
+        userID: userID,
+        bookingID: id,
+        startTime: convertFirebaseTimestampToDate(startTime)
+          .toTimeString()
+          .slice(0, 5),
+        endTime: convertFirebaseTimestampToDate(endTime)
+          .toTimeString()
+          .slice(0, 5),
+        roomID: roomID,
+      })
+    );
+  return timeList;
+};
+
 export const checkIfOccupied = (sTime, eTime, timeList, selectedBooking) => {
   let occupied = false;
 
@@ -9,7 +38,7 @@ export const checkIfOccupied = (sTime, eTime, timeList, selectedBooking) => {
     let endTimeToDate = getDate(endTime);
     let endTimeMinusOneMin = new Date(endTimeToDate.getTime() - 60000);
 
-    // skip checks if booking is the booking which are changed
+    // skip checks if user owns the bookings
     if (selectedBooking.bookingID !== bookingID) {
       // new booking inside booked item
       if (

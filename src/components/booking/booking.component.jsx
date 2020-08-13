@@ -16,7 +16,9 @@ const Booking = (props) => {
     <div
       key={props.id}
       className={`booked-item ${
-        props.currentUser && props.userID === props.currentUser.id
+        props.currentUser &&
+        props.userID === props.currentUser.id &&
+        props.type === 'bookings'
           ? 'updateCursor'
           : ''
       }`}
@@ -32,7 +34,9 @@ const Booking = (props) => {
           .replace(':', '')}`,
       }}
       onClick={() =>
-        props.currentUser && props.userID === props.currentUser.id
+        props.currentUser &&
+        props.userID === props.currentUser.id &&
+        props.type === 'bookings'
           ? (props.setSelectedBooking({
               bookingID: props.bookingID,
               startTime: props.startTime,
@@ -51,7 +55,7 @@ const Booking = (props) => {
         <div className="start-time">
           {props.startTime.toTimeString().slice(0, 5)}
         </div>
-        {props.type === 'booking' ? (
+        {props.type === 'bookings' ? (
           <div className="item-info">{props.userDisplayName}</div>
         ) : (
           <div className="item-info">{props.roomTitle}</div>

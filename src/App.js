@@ -37,6 +37,7 @@ import BookingForm from './components/booking-form/booking-form.component';
 import { Menu } from 'semantic-ui-react';
 
 const HomePageWithSpinner = WithSpinner(HomePage);
+const MySchedulePageWithSpinner = WithSpinner(MySchedulePage);
 
 class App extends Component {
   unsubscribeFromAuth = null;
@@ -99,7 +100,7 @@ class App extends Component {
             active={activeItem === 'schema'}
             onClick={this.handleItemClick}
           >
-            LOKALSCHEMAN
+            SCHEMAN
           </Menu.Item>
           {this.props.currentUser && this.props.location.pathname === '/' ? (
             <Menu.Item
@@ -169,7 +170,16 @@ class App extends Component {
             }
           />
           <Route exact path="/help" component={Help} />
-          <Route exact path="/my-schedule" component={MySchedulePage} />
+          <Route
+            exact
+            path="/my-schedule"
+            render={(props) => (
+              <MySchedulePageWithSpinner
+                isLoading={!isBookingsLoaded}
+                {...props}
+              />
+            )}
+          />
         </Switch>
         <Footer />
         {this.props.toggleNewBooking ? (

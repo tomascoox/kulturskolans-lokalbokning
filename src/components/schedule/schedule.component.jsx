@@ -26,6 +26,7 @@ import './schedule.styles.scss';
 import { deleteBooking, updateBooking } from '../../firebase/firebase.utils';
 import { checkIfOccupied } from '../../utility-functions';
 import { convertFirebaseTimestampToDate } from '../../utility-functions';
+import { createTimeList } from '../../utility-functions';
 
 const weekDays = [
   { key: '2', value: '2', text: 'Måndag' },
@@ -61,6 +62,7 @@ class Schedule extends React.Component {
     };
 
     const currentUserID = currentUser ? currentUser.id : null;
+    const currentUserDisplayName = currentUser ? currentUser.displayName : null;
 
     function sortOptions(a, b) {
       if (a.text < b.text) {
@@ -102,26 +104,12 @@ class Schedule extends React.Component {
         weekDay,
       } = this.props.selectedBooking;
 
-      let timeList = [];
-
-      Object.values(this.props.bookings)
-        .filter(
-          (booking) =>
-            booking.roomID === this.props.currentRoom.id &&
-            booking.weekDay === weekDay
-        )
-        .map(({ startTime, endTime, userID, id }) =>
-          timeList.push({
-            userID: userID,
-            bookingID: id,
-            startTime: convertFirebaseTimestampToDate(startTime)
-              .toTimeString()
-              .slice(0, 5),
-            endTime: convertFirebaseTimestampToDate(endTime)
-              .toTimeString()
-              .slice(0, 5),
-          })
-        );
+      let timeList = createTimeList(
+        bookings,
+        currentRoom,
+        selectedBooking,
+        this.props.type
+      );
 
       if (!checkIfOccupied(startTime, endTime, timeList, selectedBooking)) {
         await updateBooking(bookingID, startTime, endTime, weekDay);
@@ -169,16 +157,19 @@ class Schedule extends React.Component {
           onConfirm={closeOccupiedConfirmTryAgain}
           confirmButton="Let's do it!"
         />
-        <div className="chooser-container">
-          <Dropdown
-            inline
-            defaultValue={defaultRoom}
-            options={roomOptions}
-            onChange={onChangeRoom}
-            scrolling
-          />
-        </div>
-
+        {this.props.type === 'my-schedule' ? (
+          <div className="chooser-container">Mitt schema</div>
+        ) : (
+          <div className="chooser-container">
+            <Dropdown
+              inline
+              defaultValue={defaultRoom}
+              options={roomOptions}
+              onChange={onChangeRoom}
+              scrolling
+            />
+          </div>
+        )}
         <div className="weekdays-container">
           <div className="week-label monday">MÅNDAG</div>
           <div className="week-label tuesday">TISDAG</div>
@@ -215,7 +206,15 @@ class Schedule extends React.Component {
           <div className="time-legend time-2000">20:00</div>
           {bookings && currentRoom
             ? Object.values(bookings)
-                .filter((booking) => booking.roomID === currentRoom.id)
+                .filter(
+                  (booking) =>
+                    (this.props.type === 'bookings'
+                      ? booking.roomID
+                      : booking.userID) ===
+                    (this.props.type === 'bookings'
+                      ? currentRoom.id
+                      : currentUserID)
+                )
                 .map(
                   ({
                     id,
@@ -225,6 +224,7 @@ class Schedule extends React.Component {
                     userID,
                     userDisplayName,
                     weekDay,
+                    roomTitle,
                   }) => (
                     <Booking
                       key={id}
@@ -235,8 +235,9 @@ class Schedule extends React.Component {
                       userID={userID}
                       userDisplayName={userDisplayName}
                       weekDay={weekDay}
+                      roomTitle={roomTitle}
                       currentUser={currentUser}
-                      type="booking"
+                      type={this.props.type}
                     />
                   )
                 )
@@ -299,6 +300,7 @@ class Schedule extends React.Component {
                   })
                 }
               />
+
               <Button.Group size="small">
                 <Button primary content="ÄNDRA" onClick={handleSubmit} />
                 <Button color="red" content="RADERA" onClick={handleDelete} />

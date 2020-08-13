@@ -7,8 +7,8 @@ const Help = () => (
     <h1>INSTRUKTIONER</h1>
     <h2>Visa en lokals bokningar</h2>
     <p>
-      Gå till LOKALSCHEMAN. Tryck på lokalrubriken och välj din eftersökta lokal
-      i menyn.
+      Gå till SCHEMAN. Tryck på lokalrubriken och välj din eftersökta lokal i
+      menyn.
     </p>
     <h2>Lägga in ny bokning</h2>
     <p>

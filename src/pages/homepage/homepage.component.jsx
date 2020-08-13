@@ -5,7 +5,7 @@ import './homepage.styles.scss';
 const HomePage = (props) => {
   return (
     <div className="homepage">
-      <Schedule />
+      <Schedule type="bookings" />
     </div>
   );
 };
