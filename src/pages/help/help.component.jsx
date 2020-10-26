@@ -15,10 +15,10 @@ const Help = () => (
       Se till att du är inloggad med ditt konto. Gå till aktuell lokal enligt
       ovan och tryck sen på BOKA i menyn och fyll i uppgifterna.
     </p>
-    <h2>Ta bort/ändra bokning</h2>
+    <h2>Ta bort eller ändra bokning</h2>
     <p>
-      Se till att du är inloggad med ditt konto. Klicka/tryck på en av dina
-      bokningar och ändra tid/dag eller radera.
+      Se till att du är inloggad med ditt konto. Klicka eller tryck på en av
+      dina bokningar och ändra tid och/eller dag eller radera.
     </p>
     <h2>Lägga in en skolas egna bokningar/reservationer (dom röda)</h2>
     <p>

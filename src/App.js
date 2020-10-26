@@ -122,7 +122,7 @@ class App extends Component {
               name="my-schedule"
               active={activeItem === 'my-schedule'}
             >
-              MITT SCHEMA
+              MITT SCHEMAAA
             </Menu.Item>
           ) : null}
           <Menu.Item
