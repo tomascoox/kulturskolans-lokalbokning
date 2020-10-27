@@ -35,6 +35,7 @@ import WithSpinner from './components/with-spinner/with-spinner.component';
 import BookingForm from './components/booking-form/booking-form.component';
 
 import { Menu } from 'semantic-ui-react';
+import { Dropdown } from 'semantic-ui-react';
 
 const HomePageWithSpinner = WithSpinner(HomePage);
 const MySchedulePageWithSpinner = WithSpinner(MySchedulePage);
@@ -72,15 +73,6 @@ class App extends Component {
 
   handleItemClick = (e, { name }) => this.setState({ activeItem: name });
 
-  openNav = () => {
-    document.getElementById("mySidenav").style.width = "250px";
-  }
-
-  /* Set the width of the side navigation to 0 */
-  closeNav = () => {
-    document.getElementById("mySidenav").style.width = "0";
-  }
-
 
   render() {
     const {
@@ -103,16 +95,7 @@ class App extends Component {
 
 
     return (
-      <div id="main">
-
-      <div id="mySidenav" class="sidenav">
-        <a href="javascript:void(0)" class="closebtn" onClick={this.closeNav}>&times;</a>
-        <a href="#">About</a>
-        <a href="#">Services</a>
-        <a href="#">Clients</a>
-        <a href="#">Contact</a>
-      </div>
-
+      <Fragment>
 
         <Menu inverted compact fluid fixed="top" size="tiny">
           <Menu.Item
@@ -156,27 +139,33 @@ class App extends Component {
           >
             HJÄLP
           </Menu.Item>
-          <Menu.Item
-          as="a"
-          onClick={this.openNav}
-          >
-            ADMIN
-          </Menu.Item>
 
-          {!this.props.currentUser ? (
-            <Menu.Item
-              as="a"
-              href="/signin"
-              name="login"
-              active={activeItem === 'login'}
-              onClick={this.handleItemClick}
-            >
-              LOGIN
-            </Menu.Item>
-          ) : (
-            <Menu.Item onClick={() => auth.signOut()}>LOGOUT</Menu.Item>
-          )}
-        </Menu>
+          <Menu.Menu position='right'>
+          <Dropdown icon='user outline inverted large circular'>
+          <Dropdown.Menu>
+            <Dropdown.Item icon='edit' text='Edit Profile' />
+            <Dropdown.Item icon='globe' text='Choose Language' />
+            {!this.props.currentUser ? (
+              <Menu.Item
+                as="a"
+                href="/signin"
+                name="login"
+                active={activeItem === 'login'}
+                onClick={this.handleItemClick}
+              >
+                LOGIN
+              </Menu.Item>
+            ) : (
+              <Menu.Item onClick={() => auth.signOut()}>LOGOUT</Menu.Item>
+            )}
+            </Dropdown.Menu>
+        </Dropdown>
+
+        </Menu.Menu>
+
+
+
+          </Menu>
 
 
         <Switch>
@@ -215,7 +204,7 @@ class App extends Component {
         {this.props.toggleNewBooking ? (
           <BookingForm currentUser={currentUser} currentRoom={currentRoom} />
         ) : null}
-      </div>
+      </Fragment>
     );
   }
 }
