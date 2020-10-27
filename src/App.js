@@ -72,6 +72,16 @@ class App extends Component {
 
   handleItemClick = (e, { name }) => this.setState({ activeItem: name });
 
+  openNav = () => {
+    document.getElementById("mySidenav").style.width = "250px";
+  }
+
+  /* Set the width of the side navigation to 0 */
+  closeNav = () => {
+    document.getElementById("mySidenav").style.width = "0";
+  }
+
+
   render() {
     const {
       activeItem,
@@ -90,8 +100,20 @@ class App extends Component {
           });
     };
 
+
+
     return (
-      <Fragment>
+      <div id="main">
+
+      <div id="mySidenav" class="sidenav">
+        <a href="javascript:void(0)" class="closebtn" onClick={this.closeNav}>&times;</a>
+        <a href="#">About</a>
+        <a href="#">Services</a>
+        <a href="#">Clients</a>
+        <a href="#">Contact</a>
+      </div>
+
+
         <Menu inverted compact fluid fixed="top" size="tiny">
           <Menu.Item
             as="a"
@@ -134,6 +156,12 @@ class App extends Component {
           >
             HJÄLP
           </Menu.Item>
+          <Menu.Item
+          as="a"
+          onClick={this.openNav}
+          >
+            ADMIN
+          </Menu.Item>
 
           {!this.props.currentUser ? (
             <Menu.Item
@@ -149,6 +177,8 @@ class App extends Component {
             <Menu.Item onClick={() => auth.signOut()}>LOGOUT</Menu.Item>
           )}
         </Menu>
+
+
         <Switch>
           <Route
             exact
@@ -185,7 +215,7 @@ class App extends Component {
         {this.props.toggleNewBooking ? (
           <BookingForm currentUser={currentUser} currentRoom={currentRoom} />
         ) : null}
-      </Fragment>
+      </div>
     );
   }
 }
